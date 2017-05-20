@@ -1,0 +1,382 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04C269521ED0496E00D88E06 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269511ED0496E00D88E06 /* main.m */; };
+		04C269551ED0496E00D88E06 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269541ED0496E00D88E06 /* AppDelegate.m */; };
+		04C2695B1ED0496E00D88E06 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04C269591ED0496E00D88E06 /* Main.storyboard */; };
+		04C2695D1ED0496E00D88E06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04C2695C1ED0496E00D88E06 /* Assets.xcassets */; };
+		04C269601ED0496E00D88E06 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04C2695E1ED0496E00D88E06 /* LaunchScreen.storyboard */; };
+		04C2696D1ED049B400D88E06 /* AVGFlickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2696C1ED049B400D88E06 /* AVGFlickerTableViewController.m */; };
+		04C269751ED0522B00D88E06 /* AVGOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269741ED0522B00D88E06 /* AVGOperation.m */; };
+		04C269791ED052C000D88E06 /* AVGFlickrCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269781ED052C000D88E06 /* AVGFlickrCell.m */; };
+		04C2697D1ED055C000D88E06 /* AVGImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2697C1ED055C000D88E06 /* AVGImage.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		04C2694D1ED0496E00D88E06 /* FlickerImages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlickerImages.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		04C269511ED0496E00D88E06 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		04C269531ED0496E00D88E06 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		04C269541ED0496E00D88E06 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		04C2695A1ED0496E00D88E06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		04C2695C1ED0496E00D88E06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		04C2695F1ED0496E00D88E06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		04C269611ED0496E00D88E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		04C2696B1ED049B400D88E06 /* AVGFlickerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGFlickerTableViewController.h; sourceTree = "<group>"; };
+		04C2696C1ED049B400D88E06 /* AVGFlickerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGFlickerTableViewController.m; sourceTree = "<group>"; };
+		04C269731ED0522B00D88E06 /* AVGOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGOperation.h; sourceTree = "<group>"; };
+		04C269741ED0522B00D88E06 /* AVGOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGOperation.m; sourceTree = "<group>"; };
+		04C269771ED052C000D88E06 /* AVGFlickrCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGFlickrCell.h; sourceTree = "<group>"; };
+		04C269781ED052C000D88E06 /* AVGFlickrCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGFlickrCell.m; sourceTree = "<group>"; };
+		04C2697B1ED055C000D88E06 /* AVGImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGImage.h; sourceTree = "<group>"; };
+		04C2697C1ED055C000D88E06 /* AVGImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGImage.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		04C2694A1ED0496E00D88E06 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		04C269441ED0496E00D88E06 = {
+			isa = PBXGroup;
+			children = (
+				04C2694F1ED0496E00D88E06 /* FlickerImages */,
+				04C2694E1ED0496E00D88E06 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		04C2694E1ED0496E00D88E06 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				04C2694D1ED0496E00D88E06 /* FlickerImages.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		04C2694F1ED0496E00D88E06 /* FlickerImages */ = {
+			isa = PBXGroup;
+			children = (
+				04C269691ED0499000D88E06 /* Model */,
+				04C269681ED0498B00D88E06 /* View */,
+				04C269671ED0498200D88E06 /* Controller */,
+				04C269531ED0496E00D88E06 /* AppDelegate.h */,
+				04C269541ED0496E00D88E06 /* AppDelegate.m */,
+				04C269591ED0496E00D88E06 /* Main.storyboard */,
+				04C2695C1ED0496E00D88E06 /* Assets.xcassets */,
+				04C2695E1ED0496E00D88E06 /* LaunchScreen.storyboard */,
+				04C269611ED0496E00D88E06 /* Info.plist */,
+				04C269501ED0496E00D88E06 /* Supporting Files */,
+			);
+			path = FlickerImages;
+			sourceTree = "<group>";
+		};
+		04C269501ED0496E00D88E06 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				04C269511ED0496E00D88E06 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		04C269671ED0498200D88E06 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				04C2696B1ED049B400D88E06 /* AVGFlickerTableViewController.h */,
+				04C2696C1ED049B400D88E06 /* AVGFlickerTableViewController.m */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		04C269681ED0498B00D88E06 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				04C269761ED0528700D88E06 /* Cell */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		04C269691ED0499000D88E06 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				04C2697A1ED055A700D88E06 /* AVGImage */,
+				04C269721ED0520400D88E06 /* Operation */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		04C269721ED0520400D88E06 /* Operation */ = {
+			isa = PBXGroup;
+			children = (
+				04C269731ED0522B00D88E06 /* AVGOperation.h */,
+				04C269741ED0522B00D88E06 /* AVGOperation.m */,
+			);
+			name = Operation;
+			sourceTree = "<group>";
+		};
+		04C269761ED0528700D88E06 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				04C269771ED052C000D88E06 /* AVGFlickrCell.h */,
+				04C269781ED052C000D88E06 /* AVGFlickrCell.m */,
+			);
+			name = Cell;
+			sourceTree = "<group>";
+		};
+		04C2697A1ED055A700D88E06 /* AVGImage */ = {
+			isa = PBXGroup;
+			children = (
+				04C2697B1ED055C000D88E06 /* AVGImage.h */,
+				04C2697C1ED055C000D88E06 /* AVGImage.m */,
+			);
+			name = AVGImage;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		04C2694C1ED0496E00D88E06 /* FlickerImages */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 04C269641ED0496E00D88E06 /* Build configuration list for PBXNativeTarget "FlickerImages" */;
+			buildPhases = (
+				04C269491ED0496E00D88E06 /* Sources */,
+				04C2694A1ED0496E00D88E06 /* Frameworks */,
+				04C2694B1ED0496E00D88E06 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FlickerImages;
+			productName = FlickerImages;
+			productReference = 04C2694D1ED0496E00D88E06 /* FlickerImages.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		04C269451ED0496E00D88E06 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = "iOS-School-1";
+				TargetAttributes = {
+					04C2694C1ED0496E00D88E06 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 04C269481ED0496E00D88E06 /* Build configuration list for PBXProject "FlickerImages" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 04C269441ED0496E00D88E06;
+			productRefGroup = 04C2694E1ED0496E00D88E06 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				04C2694C1ED0496E00D88E06 /* FlickerImages */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		04C2694B1ED0496E00D88E06 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04C269601ED0496E00D88E06 /* LaunchScreen.storyboard in Resources */,
+				04C2695D1ED0496E00D88E06 /* Assets.xcassets in Resources */,
+				04C2695B1ED0496E00D88E06 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		04C269491ED0496E00D88E06 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				04C269751ED0522B00D88E06 /* AVGOperation.m in Sources */,
+				04C269791ED052C000D88E06 /* AVGFlickrCell.m in Sources */,
+				04C269551ED0496E00D88E06 /* AppDelegate.m in Sources */,
+				04C2696D1ED049B400D88E06 /* AVGFlickerTableViewController.m in Sources */,
+				04C2697D1ED055C000D88E06 /* AVGImage.m in Sources */,
+				04C269521ED0496E00D88E06 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		04C269591ED0496E00D88E06 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				04C2695A1ED0496E00D88E06 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		04C2695E1ED0496E00D88E06 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				04C2695F1ED0496E00D88E06 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		04C269621ED0496E00D88E06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		04C269631ED0496E00D88E06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		04C269651ED0496E00D88E06 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = FlickerImages/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ru.vutsins.FlickerImages;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		04C269661ED0496E00D88E06 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = FlickerImages/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = ru.vutsins.FlickerImages;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		04C269481ED0496E00D88E06 /* Build configuration list for PBXProject "FlickerImages" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				04C269621ED0496E00D88E06 /* Debug */,
+				04C269631ED0496E00D88E06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		04C269641ED0496E00D88E06 /* Build configuration list for PBXNativeTarget "FlickerImages" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				04C269651ED0496E00D88E06 /* Debug */,
+				04C269661ED0496E00D88E06 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 04C269451ED0496E00D88E06 /* Project object */;
+}
