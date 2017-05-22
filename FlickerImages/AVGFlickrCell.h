@@ -7,9 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AVGSearchImageView.h"
 
 extern NSString *const flickrCellIdentifier;
 
 @interface AVGFlickrCell : UITableViewCell
+
+@property (nonatomic, strong) AVGSearchImageView *searchedImageView;
+
++ (CGFloat)heightForCell;
 
 @end

@@ -15,7 +15,10 @@
 		04C2696D1ED049B400D88E06 /* AVGFlickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2696C1ED049B400D88E06 /* AVGFlickerTableViewController.m */; };
 		04C269751ED0522B00D88E06 /* AVGOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269741ED0522B00D88E06 /* AVGOperation.m */; };
 		04C269791ED052C000D88E06 /* AVGFlickrCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269781ED052C000D88E06 /* AVGFlickrCell.m */; };
-		04C2697D1ED055C000D88E06 /* AVGImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2697C1ED055C000D88E06 /* AVGImage.m */; };
+		04C2697D1ED055C000D88E06 /* AVGImageInformation.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2697C1ED055C000D88E06 /* AVGImageInformation.m */; };
+		19C016E51ED36934000A18DF /* AVGFlickrService.m in Sources */ = {isa = PBXBuildFile; fileRef = 19C016E41ED36934000A18DF /* AVGFlickrService.m */; };
+		19DF77491ED388F00052F5EE /* AVGSearchImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 19DF77481ED388F00052F5EE /* AVGSearchImageView.m */; };
+		F10B14FC6E6028EF823F14B3 /* libPods-FlickerImages.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9450B60AB8FE7D0A319AEDDC /* libPods-FlickerImages.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,8 +36,16 @@
 		04C269741ED0522B00D88E06 /* AVGOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGOperation.m; sourceTree = "<group>"; };
 		04C269771ED052C000D88E06 /* AVGFlickrCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGFlickrCell.h; sourceTree = "<group>"; };
 		04C269781ED052C000D88E06 /* AVGFlickrCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGFlickrCell.m; sourceTree = "<group>"; };
-		04C2697B1ED055C000D88E06 /* AVGImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGImage.h; sourceTree = "<group>"; };
-		04C2697C1ED055C000D88E06 /* AVGImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGImage.m; sourceTree = "<group>"; };
+		04C2697B1ED055C000D88E06 /* AVGImageInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGImageInformation.h; sourceTree = "<group>"; };
+		04C2697C1ED055C000D88E06 /* AVGImageInformation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGImageInformation.m; sourceTree = "<group>"; };
+		19C016E21ED36913000A18DF /* AVGServerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVGServerManager.h; sourceTree = "<group>"; };
+		19C016E31ED36934000A18DF /* AVGFlickrService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGFlickrService.h; sourceTree = "<group>"; };
+		19C016E41ED36934000A18DF /* AVGFlickrService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGFlickrService.m; sourceTree = "<group>"; };
+		19DF77471ED388F00052F5EE /* AVGSearchImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGSearchImageView.h; sourceTree = "<group>"; };
+		19DF77481ED388F00052F5EE /* AVGSearchImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGSearchImageView.m; sourceTree = "<group>"; };
+		1F5E39B5456217B2C22EB338 /* Pods-FlickerImages.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlickerImages.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FlickerImages/Pods-FlickerImages.debug.xcconfig"; sourceTree = "<group>"; };
+		22A901FC7F20B8856C28EB89 /* Pods-FlickerImages.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlickerImages.release.xcconfig"; path = "Pods/Target Support Files/Pods-FlickerImages/Pods-FlickerImages.release.xcconfig"; sourceTree = "<group>"; };
+		9450B60AB8FE7D0A319AEDDC /* libPods-FlickerImages.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FlickerImages.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F10B14FC6E6028EF823F14B3 /* libPods-FlickerImages.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,6 +65,8 @@
 			children = (
 				04C2694F1ED0496E00D88E06 /* FlickerImages */,
 				04C2694E1ED0496E00D88E06 /* Products */,
+				868C45807F6B8CB046F9A14A /* Pods */,
+				2D80484811C7D276319F05D3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,8 +123,8 @@
 		04C269691ED0499000D88E06 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				19C016E01ED368BC000A18DF /* Service */,
 				04C2697A1ED055A700D88E06 /* AVGImage */,
-				04C269721ED0520400D88E06 /* Operation */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -129,6 +143,7 @@
 			children = (
 				04C269771ED052C000D88E06 /* AVGFlickrCell.h */,
 				04C269781ED052C000D88E06 /* AVGFlickrCell.m */,
+				19DF77461ED388D30052F5EE /* Thumbnail */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -136,10 +151,55 @@
 		04C2697A1ED055A700D88E06 /* AVGImage */ = {
 			isa = PBXGroup;
 			children = (
-				04C2697B1ED055C000D88E06 /* AVGImage.h */,
-				04C2697C1ED055C000D88E06 /* AVGImage.m */,
+				04C2697B1ED055C000D88E06 /* AVGImageInformation.h */,
+				04C2697C1ED055C000D88E06 /* AVGImageInformation.m */,
 			);
 			name = AVGImage;
+			sourceTree = "<group>";
+		};
+		19C016E01ED368BC000A18DF /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				19C016E21ED36913000A18DF /* AVGServerManager.h */,
+				19C016E11ED368D1000A18DF /* Flickr */,
+				04C269721ED0520400D88E06 /* Operation */,
+			);
+			name = Service;
+			sourceTree = "<group>";
+		};
+		19C016E11ED368D1000A18DF /* Flickr */ = {
+			isa = PBXGroup;
+			children = (
+				19C016E31ED36934000A18DF /* AVGFlickrService.h */,
+				19C016E41ED36934000A18DF /* AVGFlickrService.m */,
+			);
+			name = Flickr;
+			sourceTree = "<group>";
+		};
+		19DF77461ED388D30052F5EE /* Thumbnail */ = {
+			isa = PBXGroup;
+			children = (
+				19DF77471ED388F00052F5EE /* AVGSearchImageView.h */,
+				19DF77481ED388F00052F5EE /* AVGSearchImageView.m */,
+			);
+			name = Thumbnail;
+			sourceTree = "<group>";
+		};
+		2D80484811C7D276319F05D3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9450B60AB8FE7D0A319AEDDC /* libPods-FlickerImages.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		868C45807F6B8CB046F9A14A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1F5E39B5456217B2C22EB338 /* Pods-FlickerImages.debug.xcconfig */,
+				22A901FC7F20B8856C28EB89 /* Pods-FlickerImages.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,9 +209,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 04C269641ED0496E00D88E06 /* Build configuration list for PBXNativeTarget "FlickerImages" */;
 			buildPhases = (
+				37204AFE9D519295BE6B5F2F /* [CP] Check Pods Manifest.lock */,
 				04C269491ED0496E00D88E06 /* Sources */,
 				04C2694A1ED0496E00D88E06 /* Frameworks */,
 				04C2694B1ED0496E00D88E06 /* Resources */,
+				B7C2BAD30425C0D3DBA29552 /* [CP] Embed Pods Frameworks */,
+				96C753612B9CBFCEB34E73FF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -208,16 +271,66 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		37204AFE9D519295BE6B5F2F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		96C753612B9CBFCEB34E73FF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FlickerImages/Pods-FlickerImages-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B7C2BAD30425C0D3DBA29552 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FlickerImages/Pods-FlickerImages-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		04C269491ED0496E00D88E06 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19C016E51ED36934000A18DF /* AVGFlickrService.m in Sources */,
+				19DF77491ED388F00052F5EE /* AVGSearchImageView.m in Sources */,
 				04C269751ED0522B00D88E06 /* AVGOperation.m in Sources */,
 				04C269791ED052C000D88E06 /* AVGFlickrCell.m in Sources */,
 				04C269551ED0496E00D88E06 /* AppDelegate.m in Sources */,
 				04C2696D1ED049B400D88E06 /* AVGFlickerTableViewController.m in Sources */,
-				04C2697D1ED055C000D88E06 /* AVGImage.m in Sources */,
+				04C2697D1ED055C000D88E06 /* AVGImageInformation.m in Sources */,
 				04C269521ED0496E00D88E06 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,6 +449,7 @@
 		};
 		04C269651ED0496E00D88E06 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1F5E39B5456217B2C22EB338 /* Pods-FlickerImages.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FlickerImages/Info.plist;
@@ -347,6 +461,7 @@
 		};
 		04C269661ED0496E00D88E06 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 22A901FC7F20B8856C28EB89 /* Pods-FlickerImages.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = FlickerImages/Info.plist;
@@ -375,6 +490,7 @@
 				04C269661ED0496E00D88E06 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

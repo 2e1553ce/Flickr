@@ -7,9 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import "AVGImageInformation.h"
 
 @interface AVGOperation : NSOperation
 
 @property (nonatomic, copy) NSString *imageUrlString;
+@property (nonatomic, strong) UIImage *downloadedImage;
+
+- (void)setUrlPathFromImageInformation:(AVGImageInformation *)info;
 
 @end

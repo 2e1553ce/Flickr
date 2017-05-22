@@ -1,5 +1,5 @@
 //
-//  AVGImage.h
+//  AVGImageInformation.h
 //  FlickerImages
 //
 //  Created by iOS-School-1 on 20.05.17.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface AVGImage : NSObject
+@interface AVGImageInformation : NSObject
 
 @property (copy, nonatomic) NSString *farm;
 @property (copy, nonatomic) NSString *imageID;

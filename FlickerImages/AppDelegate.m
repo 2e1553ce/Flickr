@@ -22,7 +22,10 @@
     
     AVGFlickerTableViewController *flickVC = [AVGFlickerTableViewController new];
     
-    self.window.rootViewController = flickVC;
+    UINavigationController *navVC = [UINavigationController new];
+    navVC.viewControllers = @[flickVC];
+    
+    self.window.rootViewController = navVC;
     [self.window makeKeyAndVisible];
     
     return YES;
