@@ -8,10 +8,11 @@
 
 #import "AVGFlickerTableViewController.h"
 #import "AVGFlickrCell.h"
-#import "AVGImage.h"
+#import "AVGImageInformation.h"
 #import "AVGOperation.h"
+#import "AVGFlickrService.h"
 
-@interface AVGFlickerTableViewController ()
+@interface AVGFlickerTableViewController () <UISearchBarDelegate>
 
 @property (nonatomic, strong) NSURLSession *session;
 @property (nonatomic, strong) NSURLSessionDataTask *sessionDataTask;
@@ -19,6 +20,12 @@
 @property (strong, nonatomic) NSArray *arrayOfImageUrls;
 
 @property (strong, nonatomic) NSOperationQueue *queue;
+
+@property (nonatomic, strong) AVGFlickrService *flickrService;
+
+@property (nonatomic, strong) UISearchBar *searchBar;
+
+@property (nonatomic, strong) NSCache *imageCache;
 
 @end
 
@@ -30,71 +37,15 @@
     [self.navigationItem setTitle:@"Flickr"]; // property
     [self.tableView registerClass:[AVGFlickrCell class] forCellReuseIdentifier:flickrCellIdentifier];
     
-    [self loadImagesWithName:@"sea" withCompletionHandler:^(NSArray *atms, NSError *error) {
-        [self.tableView reloadData];
-    }];
+    self.flickrService = [AVGFlickrService new];
+    CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40.f);
+    self.searchBar = [[UISearchBar alloc] initWithFrame:bounds];
+    self.searchBar.delegate = self;
+    self.searchBar.placeholder = @"Поиск";
+    self.tableView.tableHeaderView = self.searchBar;
     
     self.queue = [NSOperationQueue new];
-}
-
-#pragma mark - Load info from Flickr
-
-- (void)loadImagesWithName:(NSString *)text withCompletionHandler:(void(^)(NSArray *atms, NSError *error))completion {
-    
-    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-    self.session = [NSURLSession sessionWithConfiguration:sessionConfig];
-    
-    if (self.sessionDataTask) {
-        [self.sessionDataTask cancel];
-    }
-    
-    NSString *urlBaseString = @"https://api.flickr.com/services/rest/?method=flickr.photos.search&license=1,2,4,7&has_geo=1&extras=original_format,description,date_taken,geo,date_upload,owner_name,place_url,tags&format=json&api_key=c55f5a419863413f77af53764f86bd66&nojsoncallback=1&";
-    NSString *urlParametersString = [NSString stringWithFormat:@"text=%@", text];
-    NSString *query = [NSString stringWithFormat:@"%@%@", urlBaseString, urlParametersString];
-    NSURL *url = [NSURL URLWithString:[query stringByAddingPercentEncodingWithAllowedCharacters:
-                                       [NSCharacterSet URLFragmentAllowedCharacterSet]]];
-    
-    NSMutableURLRequest *request = [NSMutableURLRequest new];
-    [request setURL:url];
-    [request setHTTPMethod:@"GET"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    
-    self.sessionDataTask = [self.session dataTaskWithRequest:request
-                                           completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                                               
-                                               if (data) {
-                                                   NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-                                                   dict = dict[@"photos"];
-                                                   dict = dict[@"photo"];
-                                                   
-                                                   NSMutableArray *images = [NSMutableArray new];
-                                                   for (id object in dict) {
-                                                       AVGImage *image = [AVGImage new];
-                                                       image.farm = object[@"farm"];
-                                                       image.secretID = object[@"secret"];
-                                                       image.serverID = object[@"server"];
-                                                       image.imageID = object[@"id"];
-                                                       
-                                                       [images addObject:image];
-                                                   }
-                                                   self.arrayOfImageUrls = images;
-                                                   
-                                                   if (completion) {
-                                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                                           
-                                                       });
-                                                   }
-                                               } else {
-                                                   
-                                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                                       completion(nil, error);
-                                                   });
-                                                   return;
-                                               }
-                                           }];
-    [self.sessionDataTask resume];
-
+    self.imageCache = [NSCache new];
 }
 
 #pragma mark UITableViewDataSource
@@ -105,19 +56,82 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
-    
+    cell.searchedImageView.image = nil;
     if (!cell) {
         cell = [[AVGFlickrCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:flickrCellIdentifier];
     }
     
-    AVGImage *image = self.arrayOfImageUrls[indexPath.row];
+    AVGImageInformation *imageInfo = self.arrayOfImageUrls[indexPath.row];
     
     AVGOperation *operation = [AVGOperation new];
-    operation.imageUrlString = [NSString stringWithFormat:@"https://farm%@.staticflickr.com/%@/%@_%@.jpg", image.farm, image.serverID, image.imageID, image.secretID];
-    [self.queue addOperation:operation];
+    operation.downloadProgressBlock = ^(float progress) {
+        cell.searchedImageView.progressView.progress = progress;
+    };
+    [operation setUrlPathFromImageInformation:imageInfo];
+    UIImage *image = [self.imageCache objectForKey:operation.imageUrlString];
+    
+    if (image) {
+        cell.searchedImageView.image = image;
+    } else {
+        [cell.searchedImageView.activityIndicatorView startAnimating];
+        [self.queue addOperation:operation];
+        
+        __weak AVGFlickrCell *weakCell = cell;
+        __weak AVGOperation *weakOperation = operation;
+        operation.downloadBlock = ^(UIImage *image) {
+            __strong AVGFlickrCell *strongCell = weakCell;
+            __strong AVGOperation *strongOperation = weakOperation;
+            
+            if (strongCell && strongOperation) {
+                [strongCell.searchedImageView.activityIndicatorView stopAnimating];
+                [self.imageCache setObject:strongOperation.downloadedImage forKey:strongOperation.imageUrlString];
+                strongCell.searchedImageView.image = strongOperation.downloadedImage;
+                [strongCell layoutSubviews];
+            }
+
+        };
+    }
 
     return cell;
-// svyazat cell & nsoperation cherez 
+// svyazat cell & nsoperation cherez delegate
+}
+
+#pragma mark - UITableViewDelegate
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return [AVGFlickrCell heightForCell];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.searchBar endEditing:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark UISearchBarDelegate
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    
+    NSString *searchText = searchBar.text;
+    
+    __weak typeof(self) weakSelf = self;
+    [self.flickrService loadImagesInformationWithName:searchText withCompletionHandler:^(NSArray *imagesInfo, NSError *error) {
+        
+        __strong typeof(self) strongSelf = weakSelf;
+        if ([imagesInfo count] > 0) {
+            if (strongSelf) {
+                strongSelf.arrayOfImageUrls = imagesInfo;
+                
+                NSIndexSet *set = [NSIndexSet indexSetWithIndex:0];
+                [strongSelf.tableView beginUpdates];
+                [strongSelf.tableView reloadSections:set withRowAnimation:UITableViewRowAnimationFade];
+                [strongSelf.tableView endUpdates];
+                [strongSelf.searchBar endEditing:YES];
+            }
+        } else {
+            // No photos! - show uiview animationduration?
+            [strongSelf.searchBar endEditing:YES];
+        }
+    }];
 }
 
 @end

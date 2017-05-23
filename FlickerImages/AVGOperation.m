@@ -8,23 +8,30 @@
 
 #import "AVGOperation.h"
 @import UIKit;
+#import "AVGFlickrService.h"
 
 @interface AVGOperation ()
 
-
+@property (nonatomic, strong) AVGFlickrService *flickrService;
 
 @end
 
 @implementation AVGOperation
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.flickrService = [AVGFlickrService new];
+    }
+    return self;
+}
+
 - (void)main {
     
-    NSData * imageData = [[NSData alloc] initWithContentsOfURL: [NSURL URLWithString: _imageUrlString]];
-    UIImage *image = [UIImage imageWithData: imageData];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
+    [self.flickrService downloadImageFromUrl:_imageUrlString withCompletionHandler:^(UIImage *image, NSError *error) {
         self.downloadedImage = image;
-    });
+        self.downloadBlock(image);
+    }];
 }
 
 - (void)setUrlPathFromImageInformation:(AVGImageInformation *)info {
