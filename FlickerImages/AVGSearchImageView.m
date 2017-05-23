@@ -37,7 +37,8 @@
         }];
         
         [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.width.equalTo(self);
+            make.left.equalTo(self).with.offset(5);
+            make.right.equalTo(self).with.offset(-5);
             make.height.equalTo(@3);
             make.bottom.equalTo(self).with.offset(-5);
             make.centerX.equalTo(@(self.center.x));
