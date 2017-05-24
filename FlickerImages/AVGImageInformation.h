@@ -10,10 +10,7 @@
 
 @interface AVGImageInformation : NSObject
 
-@property (copy, nonatomic) NSString *farm;
-@property (copy, nonatomic) NSString *imageID;
-@property (copy, nonatomic) NSString *serverID;
-@property (copy, nonatomic) NSString *secretID;
+@property (copy, nonatomic) NSString *url;
 
 
 @end

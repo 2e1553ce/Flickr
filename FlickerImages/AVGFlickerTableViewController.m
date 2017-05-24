@@ -9,13 +9,10 @@
 #import "AVGFlickerTableViewController.h"
 #import "AVGFlickrCell.h"
 #import "AVGImageInformation.h"
-#import "AVGOperation.h"
 #import "AVGFlickrService.h"
+#import "AVGLoadImageOperation.h"
 
 @interface AVGFlickerTableViewController () <UISearchBarDelegate>
-
-@property (nonatomic, strong) NSURLSession *session;
-@property (nonatomic, strong) NSURLSessionDataTask *sessionDataTask;
 
 @property (strong, nonatomic) NSArray *arrayOfImageUrls;
 
@@ -55,6 +52,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     cell.searchedImageView.image = nil;
     if (!cell) {
@@ -63,37 +61,44 @@
     
     AVGImageInformation *imageInfo = self.arrayOfImageUrls[indexPath.row];
     
-    AVGOperation *operation = [AVGOperation new];
-    operation.downloadProgressBlock = ^(float progress) {
-        cell.searchedImageView.progressView.progress = progress;
-    };
-    [operation setUrlPathFromImageInformation:imageInfo];
-    UIImage *image = [self.imageCache objectForKey:operation.imageUrlString];
+    AVGLoadImageOperation *loadImageOperation = [[AVGLoadImageOperation alloc] initWithImageInfromation:imageInfo];
+    [self.queue addOperation:loadImageOperation];
+    
+    UIImage *image = [self.imageCache objectForKey:imageInfo.url];
     
     if (image) {
         cell.searchedImageView.image = image;
     } else {
         [cell.searchedImageView.activityIndicatorView startAnimating];
-        [self.queue addOperation:operation];
+        cell.searchedImageView.progressView.hidden = NO;
+        loadImageOperation.downloadProgressBlock = ^(float progress) {
+            if (progress == 1.0f) {
+                cell.searchedImageView.progressView.hidden = YES;
+            }
+            cell.searchedImageView.progressView.progress = progress;
+        };
         
         __weak AVGFlickrCell *weakCell = cell;
-        __weak AVGOperation *weakOperation = operation;
-        operation.downloadBlock = ^(UIImage *image) {
-            __strong AVGFlickrCell *strongCell = weakCell;
-            __strong AVGOperation *strongOperation = weakOperation;
-            
-            if (strongCell && strongOperation) {
-                [strongCell.searchedImageView.activityIndicatorView stopAnimating];
-                [self.imageCache setObject:strongOperation.downloadedImage forKey:strongOperation.imageUrlString];
-                strongCell.searchedImageView.image = strongOperation.downloadedImage;
-                [strongCell layoutSubviews];
-            }
+        __weak AVGLoadImageOperation *weakOperation = loadImageOperation;
+        loadImageOperation.completionBlock = ^{
 
+            __strong AVGFlickrCell *strongCell = weakCell;
+            __strong AVGLoadImageOperation *strongOperation = weakOperation;
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (strongCell && strongOperation) {
+                    [strongCell.searchedImageView.activityIndicatorView stopAnimating];
+                    [self.imageCache setObject:strongOperation.downloadedImage forKey:imageInfo.url];
+                    strongCell.searchedImageView.image = strongOperation.downloadedImage;
+                    [strongCell layoutSubviews];
+                }
+            });
+            
         };
     }
-
+    
     return cell;
-// svyazat cell & nsoperation cherez delegate
+    // svyazat cell & nsoperation cherez delegate
 }
 
 #pragma mark - UITableViewDelegate

@@ -69,10 +69,11 @@ typedef void(^downloadCompletedBlock)(UIImage *image, NSError *error);
                                                    NSMutableArray *images = [NSMutableArray new];
                                                    for (id object in dict) {
                                                        AVGImageInformation *image = [AVGImageInformation new];
-                                                       image.farm = object[@"farm"];
-                                                       image.secretID = object[@"secret"];
-                                                       image.serverID = object[@"server"];
-                                                       image.imageID = object[@"id"];
+                                                       image.url = [NSString stringWithFormat:@"https://farm%@.staticflickr.com/%@/%@_%@.jpg",
+                                                                    object[@"farm"],
+                                                                    object[@"server"],
+                                                                    object[@"id"],
+                                                                    object[@"secret"]];
                                                        
                                                        [images addObject:image];
                                                    }
