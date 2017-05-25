@@ -18,18 +18,14 @@ typedef void (^filterBlock)(void);
 @interface AVGFlickerTableViewController () <UISearchBarDelegate>
 
 @property (strong, nonatomic) NSArray *arrayOfImageUrls;
-
 @property (strong, nonatomic) NSOperationQueue *queue;
-
 @property (nonatomic, strong) AVGFlickrService *flickrService;
-
 @property (nonatomic, strong) UISearchBar *searchBar;
-
 @property (nonatomic, strong) NSCache *imageCache;
 
 @property (nonatomic, strong) NSMutableArray <filterBlock> *arrayOfBlocks;
-
 @property (nonatomic, strong) NSMutableArray <AVGBinaryImageOperation *> *binaryOperations;
+@property (nonatomic, strong) NSMutableArray <AVGLoadImageOperation *> *loadOperations;
 
 @end
 
@@ -53,6 +49,7 @@ typedef void (^filterBlock)(void);
     
     self.arrayOfBlocks = [NSMutableArray new];
     self.binaryOperations = [NSMutableArray new];
+    self.loadOperations = [NSMutableArray new];
 }
 
 #pragma mark UITableViewDataSource
@@ -82,8 +79,8 @@ typedef void (^filterBlock)(void);
     cell.filterButton.tag = indexPath.row;
     // ==================================================================
     
-    // Operations load & binary =========================================
-    AVGLoadImageOperation *loadImageOperation = [[AVGLoadImageOperation alloc] initWithImageInfromation:imageInfo];
+    // Operations load ==================================================
+    AVGLoadImageOperation *loadImageOperation = self.loadOperations[indexPath.row];
     
     #warning  :(
     // [binaryOperation addDependency:loadImageOperation];
@@ -211,6 +208,7 @@ typedef void (^filterBlock)(void);
     
     [self.arrayOfBlocks removeAllObjects];
     [self.binaryOperations removeAllObjects];
+    [self.loadOperations removeAllObjects];
     
     __weak typeof(self) weakSelf = self;
     [self.flickrService loadImagesInformationWithName:searchText withCompletionHandler:^(NSArray *imagesInfo, NSError *error) {
@@ -224,6 +222,9 @@ typedef void (^filterBlock)(void);
                     
                     AVGBinaryImageOperation *binaryOperation = [AVGBinaryImageOperation new];
                     self.binaryOperations[i] = binaryOperation;
+                    
+                    AVGLoadImageOperation *loadOperation = [AVGLoadImageOperation new];
+                    self.loadOperations[i] = loadOperation;
                 }
                 
                 NSIndexSet *set = [NSIndexSet indexSetWithIndex:0];
