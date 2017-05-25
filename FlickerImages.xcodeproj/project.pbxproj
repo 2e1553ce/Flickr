@@ -15,6 +15,7 @@
 		04C2696D1ED049B400D88E06 /* AVGFlickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2696C1ED049B400D88E06 /* AVGFlickerTableViewController.m */; };
 		04C269791ED052C000D88E06 /* AVGFlickrCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269781ED052C000D88E06 /* AVGFlickrCell.m */; };
 		04C2697D1ED055C000D88E06 /* AVGImageInformation.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2697C1ED055C000D88E06 /* AVGImageInformation.m */; };
+		193194891ED6313100781937 /* TstOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 193194881ED6313100781937 /* TstOperation.m */; };
 		193BCC3B1ED59FDF00B7BAF3 /* AVGLoadImageOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 193BCC3A1ED59FDF00B7BAF3 /* AVGLoadImageOperation.m */; };
 		193BCC3E1ED5A00100B7BAF3 /* AVGBinaryImageOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 193BCC3D1ED5A00100B7BAF3 /* AVGBinaryImageOperation.m */; };
 		19C016E51ED36934000A18DF /* AVGFlickrService.m in Sources */ = {isa = PBXBuildFile; fileRef = 19C016E41ED36934000A18DF /* AVGFlickrService.m */; };
@@ -37,6 +38,8 @@
 		04C269781ED052C000D88E06 /* AVGFlickrCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGFlickrCell.m; sourceTree = "<group>"; };
 		04C2697B1ED055C000D88E06 /* AVGImageInformation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGImageInformation.h; sourceTree = "<group>"; };
 		04C2697C1ED055C000D88E06 /* AVGImageInformation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGImageInformation.m; sourceTree = "<group>"; };
+		193194871ED6313100781937 /* TstOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TstOperation.h; sourceTree = "<group>"; };
+		193194881ED6313100781937 /* TstOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TstOperation.m; sourceTree = "<group>"; };
 		193BCC391ED59FDF00B7BAF3 /* AVGLoadImageOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGLoadImageOperation.h; sourceTree = "<group>"; };
 		193BCC3A1ED59FDF00B7BAF3 /* AVGLoadImageOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AVGLoadImageOperation.m; sourceTree = "<group>"; };
 		193BCC3C1ED5A00100B7BAF3 /* AVGBinaryImageOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AVGBinaryImageOperation.h; sourceTree = "<group>"; };
@@ -84,6 +87,8 @@
 		04C2694F1ED0496E00D88E06 /* FlickerImages */ = {
 			isa = PBXGroup;
 			children = (
+				193194871ED6313100781937 /* TstOperation.h */,
+				193194881ED6313100781937 /* TstOperation.m */,
 				04C269691ED0499000D88E06 /* Model */,
 				04C269681ED0498B00D88E06 /* View */,
 				04C269671ED0498200D88E06 /* Controller */,
@@ -353,6 +358,7 @@
 				04C2696D1ED049B400D88E06 /* AVGFlickerTableViewController.m in Sources */,
 				193BCC3B1ED59FDF00B7BAF3 /* AVGLoadImageOperation.m in Sources */,
 				04C2697D1ED055C000D88E06 /* AVGImageInformation.m in Sources */,
+				193194891ED6313100781937 /* TstOperation.m in Sources */,
 				04C269521ED0496E00D88E06 /* main.m in Sources */,
 				193BCC3E1ED5A00100B7BAF3 /* AVGBinaryImageOperation.m in Sources */,
 			);

@@ -6,11 +6,14 @@
 //  Copyright © 2017 iOS-School-1. All rights reserved.
 //
 
+typedef void (^filterBlock)(void);
+
 #import "AVGFlickerTableViewController.h"
 #import "AVGFlickrCell.h"
 #import "AVGImageInformation.h"
 #import "AVGFlickrService.h"
 #import "AVGLoadImageOperation.h"
+#import "AVGBinaryImageOperation.h"
 
 @interface AVGFlickerTableViewController () <UISearchBarDelegate>
 
@@ -23,6 +26,10 @@
 @property (nonatomic, strong) UISearchBar *searchBar;
 
 @property (nonatomic, strong) NSCache *imageCache;
+
+@property (nonatomic, strong) NSMutableArray <filterBlock> *arrayOfBlocks;
+
+@property (nonatomic, strong) NSMutableArray <AVGBinaryImageOperation *> *binaryOperations;
 
 @end
 
@@ -43,6 +50,9 @@
     
     self.queue = [NSOperationQueue new];
     self.imageCache = [NSCache new];
+    
+    self.arrayOfBlocks = [NSMutableArray new];
+    self.binaryOperations = [NSMutableArray new];
 }
 
 #pragma mark UITableViewDataSource
@@ -55,50 +65,131 @@
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     cell.searchedImageView.image = nil;
+    
     if (!cell) {
         cell = [[AVGFlickrCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:flickrCellIdentifier];
     }
     
+    // Image URL ========================================================
     AVGImageInformation *imageInfo = self.arrayOfImageUrls[indexPath.row];
+    // ==================================================================
     
+    // Filter black-white button ========================================
+    [cell.filterButton addTarget:self
+                          action:@selector(filterButtonAction:)
+                forControlEvents:UIControlEventTouchUpInside];
+    #warning  :(
+    cell.filterButton.tag = indexPath.row;
+    // ==================================================================
+    
+    // Operations load & binary =========================================
     AVGLoadImageOperation *loadImageOperation = [[AVGLoadImageOperation alloc] initWithImageInfromation:imageInfo];
-    [self.queue addOperation:loadImageOperation];
     
+    #warning  :(
+    // [binaryOperation addDependency:loadImageOperation];
+    [self.queue addOperation:loadImageOperation];
+    // ==================================================================
+    
+    // Cached image =====================================================
     UIImage *image = [self.imageCache objectForKey:imageInfo.url];
+    // ==================================================================
+    
+    // Disable/Enable black-white button ================================
+    AVGBinaryImageOperation *op = self.binaryOperations[indexPath.row];
+    if (op.state == AVGOperationStateBinarized) {
+        cell.filterButton.enabled = NO;
+    } else {
+        cell.filterButton.enabled = YES;
+    }
+    // ==================================================================
     
     if (image) {
         cell.searchedImageView.image = image;
     } else {
+        
+        // Downloading image ============================================
         [cell.searchedImageView.activityIndicatorView startAnimating];
         cell.searchedImageView.progressView.hidden = NO;
-        loadImageOperation.downloadProgressBlock = ^(float progress) {
-            if (progress == 1.0f) {
-                cell.searchedImageView.progressView.hidden = YES;
-            }
-            cell.searchedImageView.progressView.progress = progress;
-        };
         
         __weak AVGFlickrCell *weakCell = cell;
-        __weak AVGLoadImageOperation *weakOperation = loadImageOperation;
+        loadImageOperation.downloadProgressBlock = ^(float progress) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong AVGFlickrCell *strongCell = weakCell;
+                if (strongCell) {
+                    if (progress == 1.0f) {
+                        strongCell.searchedImageView.progressView.hidden = YES;
+                        strongCell.searchedImageView.progressView.progress = 0.f;
+                    }
+                    strongCell.searchedImageView.progressView.progress = progress;
+                }
+            });
+        };
+        
+        __weak AVGLoadImageOperation *weakLoadOperation = loadImageOperation;
+        __weak AVGBinaryImageOperation *weakBinaryOperation = self.binaryOperations[indexPath.row];
+        __weak NSCache *weakCache = self.imageCache;
+        
         loadImageOperation.completionBlock = ^{
-
+            
             __strong AVGFlickrCell *strongCell = weakCell;
-            __strong AVGLoadImageOperation *strongOperation = weakOperation;
+            __strong AVGLoadImageOperation *strongLoadOperation = weakLoadOperation;
+            __strong AVGBinaryImageOperation *strongBinaryOperation = weakBinaryOperation;
+            __strong NSCache *strongCache = weakCache;
+            
+            if (strongBinaryOperation) {
+                strongBinaryOperation.filteredImage = strongLoadOperation.downloadedImage;
+            }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (strongCell && strongOperation) {
+                if (strongCell && strongLoadOperation) {
                     [strongCell.searchedImageView.activityIndicatorView stopAnimating];
-                    [self.imageCache setObject:strongOperation.downloadedImage forKey:imageInfo.url];
-                    strongCell.searchedImageView.image = strongOperation.downloadedImage;
+                    [strongCache setObject:strongLoadOperation.downloadedImage forKey:imageInfo.url];
+                    strongCell.searchedImageView.image = strongLoadOperation.downloadedImage;
                     [strongCell layoutSubviews];
                 }
             });
             
         };
+        // ==================================================================
+        
+        // Adding black-white filter by Button===============================
+        __weak NSOperationQueue *weakQueue = self.queue;
+        weakBinaryOperation = self.binaryOperations[indexPath.row];
+        
+        filterBlock block = ^{
+            __strong AVGBinaryImageOperation *strongBinaryOperation = weakBinaryOperation;
+            __strong NSOperationQueue *strongQueue = weakQueue;
+            if (strongBinaryOperation) {
+                
+                if (strongBinaryOperation.state == AVGOperationStateNormal) {
+                    [strongQueue addOperation:strongBinaryOperation];
+                    
+                    strongBinaryOperation.completionBlock = ^{
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            __strong AVGBinaryImageOperation *strongBinaryOperation = weakBinaryOperation;
+                            __strong AVGFlickrCell *strongCell = weakCell;
+                            __strong NSCache *strongCache = weakCache;
+                            
+                            if (strongCell) {
+                                strongCell.searchedImageView.image = nil;
+                                
+                                strongCell.searchedImageView.image = strongBinaryOperation.filteredImage;
+                                [strongCache setObject:strongBinaryOperation.filteredImage forKey:imageInfo.url];
+                                [strongCell layoutSubviews];
+                                strongCell.filterButton.enabled = NO;
+                            }
+                        });
+                    };
+                }
+            };
+        };
+        [self.arrayOfBlocks addObject:block];
+        // ==================================================================
     }
     
     return cell;
-    // svyazat cell & nsoperation cherez delegate
 }
 
 #pragma mark - UITableViewDelegate
@@ -118,6 +209,9 @@
     
     NSString *searchText = searchBar.text;
     
+    [self.arrayOfBlocks removeAllObjects];
+    [self.binaryOperations removeAllObjects];
+    
     __weak typeof(self) weakSelf = self;
     [self.flickrService loadImagesInformationWithName:searchText withCompletionHandler:^(NSArray *imagesInfo, NSError *error) {
         
@@ -125,6 +219,12 @@
         if ([imagesInfo count] > 0) {
             if (strongSelf) {
                 strongSelf.arrayOfImageUrls = imagesInfo;
+                
+                for (NSInteger i = 0; i < [imagesInfo count]; ++i) {
+                    
+                    AVGBinaryImageOperation *binaryOperation = [AVGBinaryImageOperation new];
+                    self.binaryOperations[i] = binaryOperation;
+                }
                 
                 NSIndexSet *set = [NSIndexSet indexSetWithIndex:0];
                 [strongSelf.tableView beginUpdates];
@@ -137,6 +237,14 @@
             [strongSelf.searchBar endEditing:YES];
         }
     }];
+}
+
+#pragma mark - Actions
+
+- (void)filterButtonAction:(UIButton *)sender {
+    
+    filterBlock block = self.arrayOfBlocks[sender.tag];
+    block();
 }
 
 @end

@@ -14,6 +14,7 @@ extern NSString *const flickrCellIdentifier;
 @interface AVGFlickrCell : UITableViewCell
 
 @property (nonatomic, strong) AVGSearchImageView *searchedImageView;
+@property (nonatomic, strong) UIButton *filterButton;
 
 + (CGFloat)heightForCell;
 

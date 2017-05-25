@@ -75,7 +75,7 @@
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     [_dataToDownload appendData:data];
     self.downloadProgress = [ _dataToDownload length ]/_downloadSize;
-    NSLog(@"%f", self.downloadProgress);
+    //NSLog(@"%f", self.downloadProgress);
     if (self.downloadProgressBlock) {
         self.downloadProgressBlock(self.downloadProgress);
     }

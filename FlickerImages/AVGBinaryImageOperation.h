@@ -7,7 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+@class UIImage;
 
-@interface AVGBinaryImageOperation : NSOperation
+typedef NS_ENUM(NSInteger, AVGOperationState) {
+    AVGOperationStateNormal = 0,
+    AVGOperationStateBinarized
+};
+
+@interface AVGBinaryImageOperation : NSBlockOperation
+
+@property (nonatomic, strong) UIImage *filteredImage;
+@property (nonatomic, assign) AVGOperationState state;
 
 @end

@@ -27,25 +27,41 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 - (void)createSubviewsWithContact {
     
     self.searchedImageView = [AVGSearchImageView new];
+    
+    self.filterButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.filterButton.titleLabel.textAlignment = NSTextAlignmentRight;
+    [self.filterButton setTitle:@"Фильтр" forState:UIControlStateNormal];
+    self.accessoryView = self.filterButton;
+    
+    
     [self addSubview:self.searchedImageView];
+    [self addSubview:self.filterButton];
     
     // Masonry
     UIView *superview = self;
     
     // Left thumbnail
     [self.searchedImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.equalTo(@80);
-        make.height.equalTo(@80); // wtf
+        make.width.equalTo(@150);
+        make.height.equalTo(@150); // wtf
         make.left.equalTo(superview).with.offset(10);
         make.top.equalTo(superview).with.offset(5);
         make.bottom.equalTo(superview).with.offset(-5);
+    }];
+    
+    // Filter button
+    [self.filterButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(@80);
+        make.height.equalTo(@20);
+        make.right.equalTo(superview).with.offset(-10);
+        make.centerY.equalTo(@(superview.center.y)).with.offset(0); // без 0 почемуто вниз уходит ??
     }];
 }
 
 #pragma mark - Cell Height
 
 + (CGFloat)heightForCell {
-    return 90;
+    return 160;
 }
 
 @end
