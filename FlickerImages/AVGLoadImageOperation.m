@@ -30,6 +30,7 @@
         self.imageInfo = imageInfo;
         NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
         self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+        self.state = AVGDownloadOperationStateNew;
     }
     return self;
 }
@@ -64,16 +65,16 @@ didReceiveResponse:(NSURLResponse *)response
     completionHandler(NSURLSessionResponseAllow);
     
     self.downloadProgress = 0.0f;
-    self.downloadSize=[response expectedContentLength];
-    self.dataToDownload=[[NSMutableData alloc]init];
+    self.downloadSize = [response expectedContentLength];
+    self.dataToDownload = [[NSMutableData alloc]init];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     
     [self.dataToDownload appendData:data];
     self.downloadProgress = [self.dataToDownload length ] / self.downloadSize;
-    //NSLog(@"%f", self.downloadProgress);
-    
+    NSLog(@"%f", self.downloadProgress);
+
     if (self.downloadProgressBlock) {
         self.downloadProgressBlock(self.downloadProgress);
     }

@@ -223,7 +223,8 @@ typedef void (^filterBlock)(void);
                     AVGBinaryImageOperation *binaryOperation = [AVGBinaryImageOperation new];
                     self.binaryOperations[i] = binaryOperation;
                     
-                    AVGLoadImageOperation *loadOperation = [AVGLoadImageOperation new];
+                    AVGImageInformation *info = strongSelf.arrayOfImageUrls[i];
+                    AVGLoadImageOperation *loadOperation = [[AVGLoadImageOperation alloc] initWithImageInfromation:info];
                     self.loadOperations[i] = loadOperation;
                 }
                 
