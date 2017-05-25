@@ -29,7 +29,6 @@
     if (self) {
         self.imageInfo = imageInfo;
         NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        //self.session = [NSURLSession sessionWithConfiguration:sessionConfig];
         self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     }
     return self;
@@ -47,38 +46,38 @@
         [request setHTTPMethod:@"GET"];
         
         self.semaphore = dispatch_semaphore_create(0);
-        /*
-        self.sessionDataTask = [self.session dataTaskWithRequest:request
-                                               completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                                                   
-                                                   self.downloadedImage = [UIImage imageWithData:data];
-                                                   dispatch_semaphore_signal(semaphore);
-                                                   NSLog(@"2");
-        }];
-        */
+        
         self.sessionDataTask = [self.session dataTaskWithURL:photoUrl];
         [self.sessionDataTask resume];
+        
         dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     }
 }
 
 #pragma mark - NSURLSessionDelegate
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
+- (void)URLSession:(NSURLSession *)session
+          dataTask:(NSURLSessionDataTask *)dataTask
+didReceiveResponse:(NSURLResponse *)response
+ completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler {
+    
     completionHandler(NSURLSessionResponseAllow);
     
     self.downloadProgress = 0.0f;
-    _downloadSize=[response expectedContentLength];
-    _dataToDownload=[[NSMutableData alloc]init];
+    self.downloadSize=[response expectedContentLength];
+    self.dataToDownload=[[NSMutableData alloc]init];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    [_dataToDownload appendData:data];
-    self.downloadProgress = [ _dataToDownload length ]/_downloadSize;
+    
+    [self.dataToDownload appendData:data];
+    self.downloadProgress = [self.dataToDownload length ] / self.downloadSize;
     //NSLog(@"%f", self.downloadProgress);
+    
     if (self.downloadProgressBlock) {
         self.downloadProgressBlock(self.downloadProgress);
     }
+    
     if (self.downloadProgress == 1.0) {
         self.downloadedImage = [UIImage imageWithData:_dataToDownload];
         dispatch_semaphore_signal(self.semaphore);

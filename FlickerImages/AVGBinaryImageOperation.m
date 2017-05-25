@@ -45,7 +45,6 @@
     CFRelease(imageRef);
     
     self.state = AVGOperationStateBinarized;
-    // Return the new grayscale image
 }
 
 @end
