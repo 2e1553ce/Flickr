@@ -7,9 +7,14 @@
 //
 
 #import "AVGFlickrCell.h"
+#import "AVGImageService.h"
 #import "Masonry.h"
 
 NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
+
+@interface AVGFlickrCell () <AVGServiceDelegate>
+
+@end
 
 @implementation AVGFlickrCell
 
@@ -63,5 +68,20 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 + (CGFloat)heightForCell {
     return 160;
 }
+
+#pragma mark - AVGServiceDelegate 
+
+- (void)service:(AVGImageService *)service dowloadedImage:(UIImage *)image {
+    NSLog(@"");
+    dispatch_async(dispatch_get_main_queue(), ^{
+        _searchedImageView.image = image;
+        [self layoutSubviews];
+    });
+}
+
+- (void)service:(AVGImageService *)service binarizedImage:(UIImage *)image {
+    
+}
+
 
 @end

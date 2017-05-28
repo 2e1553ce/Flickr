@@ -20,11 +20,10 @@ typedef NS_ENUM(NSInteger, AVGDownloadOperationState) {
 
 @interface AVGLoadImageOperation : NSOperation
 
-@property (nonatomic, strong) AVGImageInformation *imageInfo;
 @property (nonatomic, strong) UIImage *downloadedImage;
 @property (nonatomic, assign) AVGDownloadOperationState state;
 @property (nonatomic, copy) downloadProgressBlock downloadProgressBlock;
 
-- (instancetype)initWithImageInfromation:(AVGImageInformation *)imageInfo;
+- (instancetype)initWithUrlString:(NSString *)urlString;
 
 @end

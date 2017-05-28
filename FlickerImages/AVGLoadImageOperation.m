@@ -20,16 +20,18 @@
 @property (nonatomic) float downloadProgress;
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
 
+@property (nonatomic, copy) NSString *urlString;
+
 @end
 
 @implementation AVGLoadImageOperation
 
-- (instancetype)initWithImageInfromation:(AVGImageInformation *)imageInfo {
+- (instancetype)initWithUrlString:(NSString *)urlString {
     self = [super init];
     if (self) {
-        self.imageInfo = imageInfo;
         NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
         self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+        self.urlString = urlString;
         self.state = AVGDownloadOperationStateNew;
     }
     return self;
@@ -37,9 +39,9 @@
 
 - (void)main {
     
-    if (_imageInfo) {
+    if (_urlString) {
         
-        NSURL *photoUrl = [NSURL URLWithString:[self.imageInfo.url stringByAddingPercentEncodingWithAllowedCharacters:
+        NSURL *photoUrl = [NSURL URLWithString:[_urlString stringByAddingPercentEncodingWithAllowedCharacters:
                                                 [NSCharacterSet URLFragmentAllowedCharacterSet]]];
         
         NSMutableURLRequest *request = [NSMutableURLRequest new];

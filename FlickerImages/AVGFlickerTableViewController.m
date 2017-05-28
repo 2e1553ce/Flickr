@@ -11,15 +11,16 @@ typedef void (^filterBlock)(void);
 #import "AVGFlickerTableViewController.h"
 #import "AVGFlickrCell.h"
 #import "AVGImageInformation.h"
-#import "AVGFlickrService.h"
 #import "AVGLoadImageOperation.h"
 #import "AVGBinaryImageOperation.h"
+#import "AVGImageService.h"
+#import "AVGUrlService.h"
 
 @interface AVGFlickerTableViewController () <UISearchBarDelegate>
 
-@property (strong, nonatomic) NSArray *arrayOfImageUrls;
+@property (strong, nonatomic) NSArray <AVGImageInformation *> *arrayOfImagesInformation;
 @property (strong, nonatomic) NSOperationQueue *queue;
-@property (nonatomic, strong) AVGFlickrService *flickrService;
+@property (nonatomic, strong) AVGUrlService *urlService;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) NSCache *imageCache;
 
@@ -37,7 +38,7 @@ typedef void (^filterBlock)(void);
     [self.navigationItem setTitle:@"Flickr"]; // property
     [self.tableView registerClass:[AVGFlickrCell class] forCellReuseIdentifier:flickrCellIdentifier];
     
-    self.flickrService = [AVGFlickrService new];
+    self.urlService = [AVGUrlService new];
     CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40.f);
     self.searchBar = [[UISearchBar alloc] initWithFrame:bounds];
     self.searchBar.delegate = self;
@@ -55,7 +56,7 @@ typedef void (^filterBlock)(void);
 #pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.arrayOfImageUrls count];
+    return [self.arrayOfImagesInformation count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -67,6 +68,12 @@ typedef void (^filterBlock)(void);
         cell = [[AVGFlickrCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:flickrCellIdentifier];
     }
     
+    AVGImageService *imageService = [AVGImageService new];
+    imageService.delegate = cell;
+    AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
+    [imageService loadImageFromUrlString:imageInfo.url];
+    
+    /*
     // Image URL ========================================================
     AVGImageInformation *imageInfo = self.arrayOfImageUrls[indexPath.row];
     // ==================================================================
@@ -185,7 +192,7 @@ typedef void (^filterBlock)(void);
         [self.arrayOfBlocks addObject:block];
         // ==================================================================
     }
-    
+    */
     return cell;
 }
 
@@ -206,12 +213,28 @@ typedef void (^filterBlock)(void);
     
     NSString *searchText = searchBar.text;
     
+    [_urlService loadInformationWithText:searchText];
+    [_urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
+        _arrayOfImagesInformation = imageUrls;
+        NSIndexSet *set = [NSIndexSet indexSetWithIndex:0];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView beginUpdates];
+            [self.tableView reloadSections:set withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView endUpdates];
+            [self.searchBar endEditing:YES];
+        });
+    }];
+    NSLog(@"hihi");
+    // cell.delegate = service
+    // vizivat method [_urlservice downloadImageatIndex:index];
+    
+    /*
     [self.arrayOfBlocks removeAllObjects];
     [self.binaryOperations removeAllObjects];
     [self.loadOperations removeAllObjects];
     
     __weak typeof(self) weakSelf = self;
-    [self.flickrService loadImagesInformationWithName:searchText withCompletionHandler:^(NSArray *imagesInfo, NSError *error) {
+    [self.urlService loadImagesInformationWithName:searchText withCompletionHandler:^(NSArray *imagesInfo, NSError *error) {
         
         __strong typeof(self) strongSelf = weakSelf;
         if ([imagesInfo count] > 0) {
@@ -239,6 +262,7 @@ typedef void (^filterBlock)(void);
             [strongSelf.searchBar endEditing:YES];
         }
     }];
+     */
 }
 
 #pragma mark - Actions
