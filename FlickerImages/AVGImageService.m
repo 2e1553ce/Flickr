@@ -10,11 +10,20 @@
 #import "AVGLoadImageOperation.h"
 #import "AVGBinaryImageOperation.h"
 
-@interface AVGImageService ()
+
+#import "AVGFlickrCell.h"
+
+@interface AVGImageService () <AVGFlickrCellImageServiceDelegate>
 
 @property (strong, nonatomic) NSOperationQueue *queue;
 @property (strong, nonatomic) AVGLoadImageOperation *loadOperation;
 @property (strong, nonatomic) AVGBinaryImageOperation *binaryOperation;
+
+@property (strong, nonatomic) UIImage *downloadedImage;
+@property (strong, nonatomic) UIImage *binarizedImage;
+
+@property (strong, nonatomic) NSCache *cache;
+@property (copy, nonatomic) NSString *urlString;
 
 @end
 
@@ -25,34 +34,70 @@
     
     if (self) {
         self.queue = [NSOperationQueue new];
+        self.loadOperation = [AVGLoadImageOperation new];
+        self.binaryOperation = [AVGBinaryImageOperation new];
+        [_binaryOperation addDependency:_loadOperation];
     }
     
     return  self;
 }
 
-- (UIImage *)loadImageFromUrlString:(NSString *)urlString {
-    // otsuda v completion blocke vizvat metod delegata celki i obnovit ee
-    
-    self.loadOperation = [[AVGLoadImageOperation alloc] initWithUrlString:urlString];
-    [_queue addOperation:_loadOperation];
-    
-    //__weak typeof(self) weakSelf = self;
-    //__weak typeof(_loadOperation) weakLoadOperation = _loadOperation;
-    //__weak typeof(_delegate) weakDelegate = _delegate;
-    _loadOperation.completionBlock = ^{
-        //__strong typeof(self) strongSelf = weakSelf;
-        //__strong typeof(_loadOperation) strongLoadOperation = weakLoadOperation;
-        //__strong typeof(_delegate) strongDelegate = weakDelegate;
-        //if (strongSelf) {
-        NSLog(@"");
-            [_delegate service:self dowloadedImage:_loadOperation.downloadedImage];
-        //}
-    };
-    return nil;
+- (void)cancelDownload {
+    if ([_loadOperation isExecuting]) {
+        [_loadOperation cancel];
+        NSLog(@"CANCELED");
+    }
 }
 
-- (UIImage *)binaryImage:(UIImage *)image {
-    return nil;
+- (void)loadImageFromUrlString:(NSString *)urlString
+                      andCache:(NSCache *)cache
+                       forCell:(AVGFlickrCell *)cell {
+    
+    _cache = cache;
+    _urlString = urlString;
+    
+    [cell imageDownloadStarted];
+    
+    _loadOperation.urlString = urlString;
+    [_queue addOperation:_loadOperation];
+    
+    _loadOperation.downloadProgressBlock = ^(float progress) {
+        [cell updateImageDownloadProgress:progress];
+    };
+
+    __weak typeof(self) weakSelf = self;
+    _loadOperation.completionBlock = ^{
+        __strong typeof(self) strongSelf = weakSelf;
+        if (strongSelf) {
+            
+            strongSelf.downloadedImage = strongSelf.loadOperation.downloadedImage;
+            if (strongSelf.downloadedImage) {
+                [strongSelf.cache setObject:strongSelf.downloadedImage forKey:urlString];
+            }
+            [cell imageDownloadEndedWithImage:strongSelf.downloadedImage];
+        }
+    };
+}
+
+- (void)didClickFilterButtonAtCell:(AVGFlickrCell *)cell {
+    
+#warning Create container
+    _binaryOperation.filteredImage = _loadOperation.downloadedImage;
+    [_queue addOperation:_binaryOperation];
+    
+    __weak typeof(self) weakSelf = self;
+    _binaryOperation.completionBlock = ^{
+        __strong typeof(self) strongSelf = weakSelf;
+        if (strongSelf) {
+            
+            strongSelf.binarizedImage = strongSelf.binaryOperation.filteredImage;
+            if (strongSelf.binarizedImage) {
+                [strongSelf.cache setObject:strongSelf.binarizedImage forKey:strongSelf.urlString];
+            }
+            [cell imageBinarizeEndedWithImage:strongSelf.binarizedImage];
+        }
+
+    };
 }
 
 @end

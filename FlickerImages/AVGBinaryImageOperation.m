@@ -11,14 +11,6 @@
 
 @implementation AVGBinaryImageOperation
 
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.state = AVGOperationStateNormal;
-    }
-    return self;
-}
-
 - (void)main {
     // Create image rectangle with current image width/height
     CGRect imageRect = CGRectMake(0, 0, self.filteredImage.size.width, self.filteredImage.size.height);
@@ -43,8 +35,6 @@
     CGColorSpaceRelease(colorSpace);
     CGContextRelease(context);
     CFRelease(imageRef);
-    
-    self.state = AVGOperationStateBinarized;
 }
 
 @end

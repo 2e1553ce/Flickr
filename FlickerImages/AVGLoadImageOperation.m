@@ -20,19 +20,24 @@
 @property (nonatomic) float downloadProgress;
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
 
-@property (nonatomic, copy) NSString *urlString;
-
 @end
 
 @implementation AVGLoadImageOperation
 
+#warning inits
+- (instancetype)init {
+    
+    NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
+    self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+    self.state = AVGDownloadOperationStateNew;
+    
+    return [self initWithUrlString:nil];
+}
+
 - (instancetype)initWithUrlString:(NSString *)urlString {
     self = [super init];
     if (self) {
-        NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
-        self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
         self.urlString = urlString;
-        self.state = AVGDownloadOperationStateNew;
     }
     return self;
 }
@@ -79,6 +84,14 @@ didReceiveResponse:(NSURLResponse *)response
 
     if (self.downloadProgressBlock) {
         self.downloadProgressBlock(self.downloadProgress);
+    }
+    
+    if (self.isCancelled) {
+        self.downloadedImage = nil;
+        NSLog(@"Operation CANCELLLLLLEEEEEEEDDDDD");
+        self.downloadProgress = 0.f;
+        [self.sessionDataTask cancel];
+        dispatch_semaphore_signal(self.semaphore);
     }
     
     if (self.downloadProgress == 1.0) {

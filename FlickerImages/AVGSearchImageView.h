@@ -8,9 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, AVGThumbnailState) {
+    AVGThumbnailStateNormal = 0,
+    AVGThumbnailStateBinarized
+};
+
 @interface AVGSearchImageView : UIImageView
 
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
 @property (nonatomic, strong) UIProgressView *progressView;
+@property (nonatomic, assign) AVGThumbnailState thumbnailState;
 
 @end

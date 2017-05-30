@@ -20,10 +20,12 @@ typedef NS_ENUM(NSInteger, AVGDownloadOperationState) {
 
 @interface AVGLoadImageOperation : NSOperation
 
+@property (nonatomic, copy) NSString *urlString;
 @property (nonatomic, strong) UIImage *downloadedImage;
 @property (nonatomic, assign) AVGDownloadOperationState state;
 @property (nonatomic, copy) downloadProgressBlock downloadProgressBlock;
 
-- (instancetype)initWithUrlString:(NSString *)urlString;
+- (instancetype)init;
+- (instancetype)initWithUrlString:(NSString *)urlString NS_DESIGNATED_INITIALIZER;
 
 @end

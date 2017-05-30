@@ -26,7 +26,7 @@ typedef void (^filterBlock)(void);
 
 @property (nonatomic, strong) NSMutableArray <filterBlock> *arrayOfBlocks;
 @property (nonatomic, strong) NSMutableArray <AVGBinaryImageOperation *> *binaryOperations;
-@property (nonatomic, strong) NSMutableArray <AVGLoadImageOperation *> *loadOperations;
+@property (nonatomic, strong) NSMutableArray <AVGImageService *> *imageServices;
 
 @end
 
@@ -47,10 +47,11 @@ typedef void (^filterBlock)(void);
     
     self.queue = [NSOperationQueue new];
     self.imageCache = [NSCache new];
+    [self.imageCache setCountLimit:50];
     
     self.arrayOfBlocks = [NSMutableArray new];
     self.binaryOperations = [NSMutableArray new];
-    self.loadOperations = [NSMutableArray new];
+    self.imageServices = [NSMutableArray new];
 }
 
 #pragma mark UITableViewDataSource
@@ -63,136 +64,29 @@ typedef void (^filterBlock)(void);
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     cell.searchedImageView.image = nil;
-    
+    #warning no need
+    /*
     if (!cell) {
+        NSLog(@"Cell created");
         cell = [[AVGFlickrCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:flickrCellIdentifier];
     }
-    
-    AVGImageService *imageService = [AVGImageService new];
-    imageService.delegate = cell;
-    AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
-    [imageService loadImageFromUrlString:imageInfo.url];
-    
-    /*
-    // Image URL ========================================================
-    AVGImageInformation *imageInfo = self.arrayOfImageUrls[indexPath.row];
-    // ==================================================================
-    
-    // Filter black-white button ========================================
-    [cell.filterButton addTarget:self
-                          action:@selector(filterButtonAction:)
-                forControlEvents:UIControlEventTouchUpInside];
-    #warning  :(
-    cell.filterButton.tag = indexPath.row;
-    // ==================================================================
-    
-    // Operations load ==================================================
-    AVGLoadImageOperation *loadImageOperation = self.loadOperations[indexPath.row];
-    
-    #warning  :(
-    // [binaryOperation addDependency:loadImageOperation];
-    [self.queue addOperation:loadImageOperation];
-    // ==================================================================
-    
-    // Cached image =====================================================
-    UIImage *image = [self.imageCache objectForKey:imageInfo.url];
-    // ==================================================================
-    
-    // Disable/Enable black-white button ================================
-    AVGBinaryImageOperation *op = self.binaryOperations[indexPath.row];
-    if (op.state == AVGOperationStateBinarized) {
-        cell.filterButton.enabled = NO;
-    } else {
-        cell.filterButton.enabled = YES;
-    }
-    // ==================================================================
-    
-    if (image) {
-        cell.searchedImageView.image = image;
-    } else {
-        
-        // Downloading image ============================================
-        [cell.searchedImageView.activityIndicatorView startAnimating];
-        cell.searchedImageView.progressView.hidden = NO;
-        
-        __weak AVGFlickrCell *weakCell = cell;
-        loadImageOperation.downloadProgressBlock = ^(float progress) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                __strong AVGFlickrCell *strongCell = weakCell;
-                if (strongCell) {
-                    if (progress == 1.0f) {
-                        strongCell.searchedImageView.progressView.hidden = YES;
-                        strongCell.searchedImageView.progressView.progress = 0.f;
-                    }
-                    strongCell.searchedImageView.progressView.progress = progress;
-                }
-            });
-        };
-        
-        __weak AVGLoadImageOperation *weakLoadOperation = loadImageOperation;
-        __weak AVGBinaryImageOperation *weakBinaryOperation = self.binaryOperations[indexPath.row];
-        __weak NSCache *weakCache = self.imageCache;
-        
-        loadImageOperation.completionBlock = ^{
-            
-            __strong AVGFlickrCell *strongCell = weakCell;
-            __strong AVGLoadImageOperation *strongLoadOperation = weakLoadOperation;
-            __strong AVGBinaryImageOperation *strongBinaryOperation = weakBinaryOperation;
-            __strong NSCache *strongCache = weakCache;
-            
-            if (strongBinaryOperation) {
-                strongBinaryOperation.filteredImage = strongLoadOperation.downloadedImage;
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (strongCell && strongLoadOperation) {
-                    [strongCell.searchedImageView.activityIndicatorView stopAnimating];
-                    [strongCache setObject:strongLoadOperation.downloadedImage forKey:imageInfo.url];
-                    strongCell.searchedImageView.image = strongLoadOperation.downloadedImage;
-                    [strongCell layoutSubviews];
-                }
-            });
-            
-        };
-        // ==================================================================
-        
-        // Adding black-white filter by Button===============================
-        __weak NSOperationQueue *weakQueue = self.queue;
-        weakBinaryOperation = self.binaryOperations[indexPath.row];
-        
-        filterBlock block = ^{
-            __strong AVGBinaryImageOperation *strongBinaryOperation = weakBinaryOperation;
-            __strong NSOperationQueue *strongQueue = weakQueue;
-            if (strongBinaryOperation) {
-                
-                if (strongBinaryOperation.state == AVGOperationStateNormal) {
-                    [strongQueue addOperation:strongBinaryOperation];
-                    
-                    strongBinaryOperation.completionBlock = ^{
-                        
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            __strong AVGBinaryImageOperation *strongBinaryOperation = weakBinaryOperation;
-                            __strong AVGFlickrCell *strongCell = weakCell;
-                            __strong NSCache *strongCache = weakCache;
-                            
-                            if (strongCell) {
-                                strongCell.searchedImageView.image = nil;
-                                
-                                strongCell.searchedImageView.image = strongBinaryOperation.filteredImage;
-                                [strongCache setObject:strongBinaryOperation.filteredImage forKey:imageInfo.url];
-                                [strongCell layoutSubviews];
-                                strongCell.filterButton.enabled = NO;
-                            }
-                        });
-                    };
-                }
-            };
-        };
-        [self.arrayOfBlocks addObject:block];
-        // ==================================================================
-    }
     */
+    // separate to another method
+    AVGImageService *imageService = [AVGImageService new];
+    cell.imageServiceDelegate = imageService;
+    [self.imageServices addObject:imageService];
+    
+    AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
+    UIImage *cachedImage = [self.imageCache objectForKey:imageInfo.url];
+    
+    if (cachedImage) {
+        cell.searchedImageView.image = cachedImage;
+    } else {
+        [cell.imageServiceDelegate loadImageFromUrlString:imageInfo.url andCache:self.imageCache forCell:cell];
+    }
+    // pause/resume
+    // page loading
+    
     return cell;
 }
 
@@ -205,6 +99,11 @@ typedef void (^filterBlock)(void);
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.searchBar endEditing:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
+    AVGImageService *imageService = self.imageServices[indexPath.row];
+    [imageService cancelDownload];
 }
 
 #pragma mark UISearchBarDelegate
@@ -224,53 +123,6 @@ typedef void (^filterBlock)(void);
             [self.searchBar endEditing:YES];
         });
     }];
-    NSLog(@"hihi");
-    // cell.delegate = service
-    // vizivat method [_urlservice downloadImageatIndex:index];
-    
-    /*
-    [self.arrayOfBlocks removeAllObjects];
-    [self.binaryOperations removeAllObjects];
-    [self.loadOperations removeAllObjects];
-    
-    __weak typeof(self) weakSelf = self;
-    [self.urlService loadImagesInformationWithName:searchText withCompletionHandler:^(NSArray *imagesInfo, NSError *error) {
-        
-        __strong typeof(self) strongSelf = weakSelf;
-        if ([imagesInfo count] > 0) {
-            if (strongSelf) {
-                strongSelf.arrayOfImageUrls = imagesInfo;
-                
-                for (NSInteger i = 0; i < [imagesInfo count]; ++i) {
-                    
-                    AVGBinaryImageOperation *binaryOperation = [AVGBinaryImageOperation new];
-                    self.binaryOperations[i] = binaryOperation;
-                    
-                    AVGImageInformation *info = strongSelf.arrayOfImageUrls[i];
-                    AVGLoadImageOperation *loadOperation = [[AVGLoadImageOperation alloc] initWithImageInfromation:info];
-                    self.loadOperations[i] = loadOperation;
-                }
-                
-                NSIndexSet *set = [NSIndexSet indexSetWithIndex:0];
-                [strongSelf.tableView beginUpdates];
-                [strongSelf.tableView reloadSections:set withRowAnimation:UITableViewRowAnimationFade];
-                [strongSelf.tableView endUpdates];
-                [strongSelf.searchBar endEditing:YES];
-            }
-        } else {
-            // No photos! - show uiview animationduration?
-            [strongSelf.searchBar endEditing:YES];
-        }
-    }];
-     */
-}
-
-#pragma mark - Actions
-
-- (void)filterButtonAction:(UIButton *)sender {
-    
-    filterBlock block = self.arrayOfBlocks[sender.tag];
-    block();
 }
 
 @end

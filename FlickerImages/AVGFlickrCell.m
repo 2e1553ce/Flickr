@@ -12,10 +12,6 @@
 
 NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 
-@interface AVGFlickrCell () <AVGServiceDelegate>
-
-@end
-
 @implementation AVGFlickrCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
@@ -27,6 +23,10 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     return self;
 }
 
+- (void)prepareForReuse {
+    self.searchedImageView.image = nil;
+}
+
 #pragma mark - Constraints
 
 - (void)createSubviewsWithContact {
@@ -36,6 +36,10 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     self.filterButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.filterButton.titleLabel.textAlignment = NSTextAlignmentRight;
     [self.filterButton setTitle:@"Фильтр" forState:UIControlStateNormal];
+    [self.filterButton addTarget:self
+                          action:@selector(filterButtonAction:)
+                forControlEvents:UIControlEventTouchUpInside];
+    self.filterButton.enabled = NO;
     self.accessoryView = self.filterButton;
     
     
@@ -69,19 +73,50 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     return 160;
 }
 
-#pragma mark - AVGServiceDelegate 
+#pragma mark - Image operations
 
-- (void)service:(AVGImageService *)service dowloadedImage:(UIImage *)image {
-    NSLog(@"");
+- (void)updateImageDownloadProgress:(float)progress {
     dispatch_async(dispatch_get_main_queue(), ^{
-        _searchedImageView.image = image;
-        [self layoutSubviews];
+        _searchedImageView.progressView.progress = progress;
     });
 }
 
-- (void)service:(AVGImageService *)service binarizedImage:(UIImage *)image {
-    
+- (void)imageDownloadStarted {
+    _searchedImageView.progressView.hidden = NO;
+    _searchedImageView.progressView.progress = 0.f;
+    [_searchedImageView.activityIndicatorView startAnimating];
 }
 
+- (void)imageDownloadEndedWithImage:(UIImage *)image {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (image) {
+            _filterButton.enabled = YES;
+            _searchedImageView.image = image;
+            [self setNeedsLayout];
+            [_searchedImageView.activityIndicatorView stopAnimating];
+            _searchedImageView.progressView.hidden = YES;
+        }
+    });
+}
+
+- (void)imageBinarizeEndedWithImage:(UIImage *)image {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (image) {
+    #warning animation not working 
+            [UIView animateWithDuration:1.0f animations:^{
+                _searchedImageView.thumbnailState = AVGThumbnailStateBinarized;
+                _filterButton.enabled = NO;
+                _searchedImageView.image = image;
+                [self setNeedsLayout];
+            }];
+        }
+    });
+}
+
+#pragma mark - Actions
+
+- (void)filterButtonAction:(UIButton *)sender {
+    [_imageServiceDelegate didClickFilterButtonAtCell:self];
+}
 
 @end

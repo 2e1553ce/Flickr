@@ -7,21 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-@class UIImage;
-@class AVGImageService;
+#import "AVGFlickrCell.h"
+@protocol AVGFlickrCellImageServiceDelegate;
 
-@protocol AVGServiceDelegate <NSObject>
+@interface AVGImageService : NSObject <AVGFlickrCellImageServiceDelegate>
 
-@required
-- (void)service:(AVGImageService *)service dowloadedImage:(UIImage *)image;
-- (void)service:(AVGImageService *)service binarizedImage:(UIImage *)image;
-
-@end
-
-@interface AVGImageService : NSObject
-
-@property (nonatomic, weak) id <AVGServiceDelegate> delegate;
-
-- (UIImage *)loadImageFromUrlString:(NSString *)urlString;
+- (void)cancelDownload;
 
 @end

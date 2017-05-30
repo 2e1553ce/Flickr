@@ -21,6 +21,7 @@
          */
         
         // Constraints for indicator
+        self.thumbnailState = AVGThumbnailStateNormal;
         self.activityIndicatorView = [UIActivityIndicatorView new];
         [self addSubview:self.activityIndicatorView];
         self.activityIndicatorView.color = UIColor.grayColor;

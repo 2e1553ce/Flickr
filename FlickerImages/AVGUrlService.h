@@ -13,8 +13,6 @@
 
 @property (nonatomic, copy) NSArray <AVGImageInformation *> *imagesUrls;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
 - (void)loadInformationWithText:(NSString *)text;
 - (void)parseInformationWithCompletionHandler:(void(^)(NSArray *imageUrls))completion;
 
