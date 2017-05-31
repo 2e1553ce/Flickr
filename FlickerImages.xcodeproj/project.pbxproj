@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		04C269521ED0496E00D88E06 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269511ED0496E00D88E06 /* main.m */; };
 		04C269551ED0496E00D88E06 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C269541ED0496E00D88E06 /* AppDelegate.m */; };
-		04C2695B1ED0496E00D88E06 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04C269591ED0496E00D88E06 /* Main.storyboard */; };
 		04C2695D1ED0496E00D88E06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04C2695C1ED0496E00D88E06 /* Assets.xcassets */; };
 		04C269601ED0496E00D88E06 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04C2695E1ED0496E00D88E06 /* LaunchScreen.storyboard */; };
 		04C2696D1ED049B400D88E06 /* AVGFlickerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 04C2696C1ED049B400D88E06 /* AVGFlickerTableViewController.m */; };
@@ -31,7 +30,6 @@
 		04C269511ED0496E00D88E06 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		04C269531ED0496E00D88E06 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		04C269541ED0496E00D88E06 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		04C2695A1ED0496E00D88E06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		04C2695C1ED0496E00D88E06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		04C2695F1ED0496E00D88E06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		04C269611ED0496E00D88E06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -100,7 +98,6 @@
 				04C269671ED0498200D88E06 /* Controller */,
 				04C269531ED0496E00D88E06 /* AppDelegate.h */,
 				04C269541ED0496E00D88E06 /* AppDelegate.m */,
-				04C269591ED0496E00D88E06 /* Main.storyboard */,
 				04C2695C1ED0496E00D88E06 /* Assets.xcassets */,
 				04C2695E1ED0496E00D88E06 /* LaunchScreen.storyboard */,
 				04C269611ED0496E00D88E06 /* Info.plist */,
@@ -337,7 +334,6 @@
 			files = (
 				04C269601ED0496E00D88E06 /* LaunchScreen.storyboard in Resources */,
 				04C2695D1ED0496E00D88E06 /* Assets.xcassets in Resources */,
-				04C2695B1ED0496E00D88E06 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,14 +411,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		04C269591ED0496E00D88E06 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				04C2695A1ED0496E00D88E06 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		04C2695E1ED0496E00D88E06 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

@@ -6,11 +6,10 @@
 //  Copyright © 2017 iOS-School-1. All rights reserved.
 //
 
+@import UIKit;
 #import "AVGLoadImageOperation.h"
-#import <UIKit/UIKit.h>
-#import "AVGImageInformation.h"
 
-@interface AVGLoadImageOperation () <NSURLSessionDataDelegate, NSURLSessionDelegate, NSURLSessionTaskDelegate>
+@interface AVGLoadImageOperation () <NSURLSessionDelegate>
 
 @property (nonatomic, strong) NSURLSession *session;
 @property (nonatomic, strong) NSURLSessionDataTask *sessionDataTask;
@@ -18,6 +17,7 @@
 @property (nonatomic, retain) NSMutableData *dataToDownload;
 @property (nonatomic) float downloadSize;
 @property (nonatomic) float downloadProgress;
+
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
 
 @end
@@ -29,7 +29,6 @@
     
     NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
-    self.state = AVGDownloadOperationStateNew;
     
     return [self initWithUrlString:nil];
 }
@@ -56,9 +55,9 @@
         self.semaphore = dispatch_semaphore_create(0);
         
         self.sessionDataTask = [self.session dataTaskWithURL:photoUrl];
-        [self.sessionDataTask resume];
+        [_sessionDataTask resume];
         
-        dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
     }
 }
 
@@ -71,32 +70,32 @@ didReceiveResponse:(NSURLResponse *)response
     
     completionHandler(NSURLSessionResponseAllow);
     
-    self.downloadProgress = 0.0f;
-    self.downloadSize = [response expectedContentLength];
-    self.dataToDownload = [[NSMutableData alloc]init];
+    _downloadProgress = 0.0f;
+    _downloadSize = [response expectedContentLength];
+    self.dataToDownload = [NSMutableData new];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     
-    [self.dataToDownload appendData:data];
-    self.downloadProgress = [self.dataToDownload length ] / self.downloadSize;
+    [_dataToDownload appendData:data];
+    _downloadProgress = [_dataToDownload length ] / _downloadSize;
     NSLog(@"%f", self.downloadProgress);
 
-    if (self.downloadProgressBlock) {
-        self.downloadProgressBlock(self.downloadProgress);
+    if (_downloadProgressBlock) {
+        _downloadProgressBlock(_downloadProgress);
     }
     
     if (self.isCancelled) {
-        self.downloadedImage = nil;
+        _downloadedImage = nil;
         NSLog(@"Operation CANCELLLLLLEEEEEEEDDDDD");
-        self.downloadProgress = 0.f;
-        [self.sessionDataTask cancel];
+        _downloadProgress = 0.f;
+        [_sessionDataTask cancel];
         dispatch_semaphore_signal(self.semaphore);
     }
     
-    if (self.downloadProgress == 1.0) {
-        self.downloadedImage = [UIImage imageWithData:_dataToDownload];
-        dispatch_semaphore_signal(self.semaphore);
+    if (_downloadProgress == 1.0) {
+        _downloadedImage = [UIImage imageWithData:_dataToDownload];
+        dispatch_semaphore_signal(_semaphore);
     }
 }
 

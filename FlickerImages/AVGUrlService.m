@@ -7,24 +7,20 @@
 //
 
 #import "AVGUrlService.h"
-#import "AVGImageInformation.h"
 #import "AVGLoadUrlOperation.h"
 #import "AVGParseUrlOperation.h"
-#import "AVGLoadImageOperation.h"
-#import "AVGBinaryImageOperation.h"
 #import "AVGLoadParseContainer.h"
-#import <UIKit/UIKit.h>
 
 @interface AVGUrlService ()
 
 @property (nonatomic, copy) NSString *searchText;
 
-@property (strong, nonatomic) NSOperationQueue *queue;
+@property (nonatomic, strong) NSOperationQueue *queue;
 
-@property (strong, nonatomic) AVGLoadUrlOperation *loadUrlsOperation;
-@property (strong, nonatomic) AVGParseUrlOperation *parseUrlsOperation;
+@property (nonatomic, strong) AVGLoadUrlOperation *loadUrlsOperation;
+@property (nonatomic, strong) AVGParseUrlOperation *parseUrlsOperation;
 
-@property (strong, nonatomic) AVGLoadParseContainer *operationDataContainer;
+@property (nonatomic, strong) AVGLoadParseContainer *operationDataContainer;
 
 @end
 
@@ -32,7 +28,6 @@
 
 - (instancetype)init {
     self = [super init];
-    
     if (self) {
         self.queue = [NSOperationQueue new];
     }

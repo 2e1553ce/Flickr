@@ -15,15 +15,15 @@
 
 @interface AVGImageService () <AVGFlickrCellImageServiceDelegate>
 
-@property (strong, nonatomic) NSOperationQueue *queue;
-@property (strong, nonatomic) AVGLoadImageOperation *loadOperation;
-@property (strong, nonatomic) AVGBinaryImageOperation *binaryOperation;
+@property (nonatomic, strong) NSOperationQueue *queue;
+@property (nonatomic, strong) AVGLoadImageOperation *loadOperation;
+@property (nonatomic, strong) AVGBinaryImageOperation *binaryOperation;
 
-@property (strong, nonatomic) UIImage *downloadedImage;
-@property (strong, nonatomic) UIImage *binarizedImage;
+@property (nonatomic, strong) UIImage *downloadedImage;
+@property (nonatomic, strong) UIImage *binarizedImage;
 
-@property (strong, nonatomic) NSCache *cache;
-@property (copy, nonatomic) NSString *urlString;
+@property (nonatomic, strong) NSCache *cache;
+@property (nonatomic, copy) NSString *urlString;
 
 @end
 

@@ -6,8 +6,6 @@
 //  Copyright © 2017 iOS-School-1. All rights reserved.
 //
 
-typedef void (^filterBlock)(void);
-
 #import "AVGFlickerTableViewController.h"
 #import "AVGFlickrCell.h"
 #import "AVGImageInformation.h"
@@ -24,7 +22,6 @@ typedef void (^filterBlock)(void);
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) NSCache *imageCache;
 
-@property (nonatomic, strong) NSMutableArray <filterBlock> *arrayOfBlocks;
 @property (nonatomic, strong) NSMutableArray <AVGBinaryImageOperation *> *binaryOperations;
 @property (nonatomic, strong) NSMutableArray <AVGImageService *> *imageServices;
 
@@ -35,21 +32,20 @@ typedef void (^filterBlock)(void);
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.navigationItem setTitle:@"Flickr"]; // property
+    self.navigationItem.title = @"Flickr";
     [self.tableView registerClass:[AVGFlickrCell class] forCellReuseIdentifier:flickrCellIdentifier];
     
     self.urlService = [AVGUrlService new];
     CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40.f);
     self.searchBar = [[UISearchBar alloc] initWithFrame:bounds];
-    self.searchBar.delegate = self;
-    self.searchBar.placeholder = @"Поиск";
+    _searchBar.delegate = self;
+    _searchBar.placeholder = @"Поиск";
     self.tableView.tableHeaderView = self.searchBar;
     
     self.queue = [NSOperationQueue new];
     self.imageCache = [NSCache new];
-    [self.imageCache setCountLimit:50];
+    _imageCache.countLimit = 50;
     
-    self.arrayOfBlocks = [NSMutableArray new];
     self.binaryOperations = [NSMutableArray new];
     self.imageServices = [NSMutableArray new];
 }
@@ -74,10 +70,10 @@ typedef void (^filterBlock)(void);
     // separate to another method
     AVGImageService *imageService = [AVGImageService new];
     cell.imageServiceDelegate = imageService;
-    [self.imageServices addObject:imageService];
+    [_imageServices addObject:imageService];
     
     AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
-    UIImage *cachedImage = [self.imageCache objectForKey:imageInfo.url];
+    UIImage *cachedImage = [_imageCache objectForKey:imageInfo.url];
     
     if (cachedImage) {
         cell.searchedImageView.image = cachedImage;
@@ -97,12 +93,12 @@ typedef void (^filterBlock)(void);
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.searchBar endEditing:YES];
+    [_searchBar endEditing:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-    AVGImageService *imageService = self.imageServices[indexPath.row];
+    AVGImageService *imageService = _imageServices[indexPath.row];
     [imageService cancelDownload];
 }
 

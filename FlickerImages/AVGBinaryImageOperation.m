@@ -7,7 +7,7 @@
 //
 
 #import "AVGBinaryImageOperation.h"
-#import <UIKit/UIKit.h>
+@import UIKit;
 
 @implementation AVGBinaryImageOperation
 

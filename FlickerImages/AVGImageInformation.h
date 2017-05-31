@@ -6,11 +6,11 @@
 //  Copyright © 2017 iOS-School-1. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @interface AVGImageInformation : NSObject
 
-@property (copy, nonatomic) NSString *url;
+@property (nonatomic, copy) NSString *url;
 
 
 @end

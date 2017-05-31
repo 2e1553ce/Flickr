@@ -24,7 +24,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 }
 
 - (void)prepareForReuse {
-    self.searchedImageView.image = nil;
+    _searchedImageView.image = nil;
 }
 
 #pragma mark - Constraints
@@ -34,23 +34,22 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     self.searchedImageView = [AVGSearchImageView new];
     
     self.filterButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.filterButton.titleLabel.textAlignment = NSTextAlignmentRight;
-    [self.filterButton setTitle:@"Фильтр" forState:UIControlStateNormal];
-    [self.filterButton addTarget:self
+    _filterButton.titleLabel.textAlignment = NSTextAlignmentRight;
+    [_filterButton setTitle:@"Фильтр" forState:UIControlStateNormal];
+    [_filterButton addTarget:self
                           action:@selector(filterButtonAction:)
                 forControlEvents:UIControlEventTouchUpInside];
-    self.filterButton.enabled = NO;
-    self.accessoryView = self.filterButton;
+    _filterButton.enabled = NO;
+    self.accessoryView = _filterButton;
     
-    
-    [self addSubview:self.searchedImageView];
-    [self addSubview:self.filterButton];
+    [self addSubview:_searchedImageView];
+    [self addSubview:_filterButton];
     
     // Masonry
     UIView *superview = self;
     
     // Left thumbnail
-    [self.searchedImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [_searchedImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.equalTo(@150);
         make.height.equalTo(@150); // wtf
         make.left.equalTo(superview).with.offset(10);
@@ -59,7 +58,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     }];
     
     // Filter button
-    [self.filterButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    [_filterButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.equalTo(@80);
         make.height.equalTo(@20);
         make.right.equalTo(superview).with.offset(-10);
@@ -89,18 +88,20 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 
 - (void)imageDownloadEndedWithImage:(UIImage *)image {
     dispatch_async(dispatch_get_main_queue(), ^{
+        
         if (image) {
             _filterButton.enabled = YES;
             _searchedImageView.image = image;
-            [self setNeedsLayout];
             [_searchedImageView.activityIndicatorView stopAnimating];
             _searchedImageView.progressView.hidden = YES;
+            [self setNeedsLayout];
         }
     });
 }
 
 - (void)imageBinarizeEndedWithImage:(UIImage *)image {
     dispatch_async(dispatch_get_main_queue(), ^{
+        
         if (image) {
     #warning animation not working 
             [UIView animateWithDuration:1.0f animations:^{

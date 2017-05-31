@@ -6,7 +6,8 @@
 //  Copyright © 2017 iOS-School-1. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+
 @class UIImage;
 
 @interface AVGBinaryImageOperation : NSBlockOperation

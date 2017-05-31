@@ -21,23 +21,23 @@
          */
         
         // Constraints for indicator
-        self.thumbnailState = AVGThumbnailStateNormal;
+        _thumbnailState = AVGThumbnailStateNormal;
         self.activityIndicatorView = [UIActivityIndicatorView new];
-        [self addSubview:self.activityIndicatorView];
-        self.activityIndicatorView.color = UIColor.grayColor;
+        _activityIndicatorView.color = UIColor.grayColor;
+        [self addSubview:_activityIndicatorView];
         
         self.progressView = [UIProgressView new];
-        [self addSubview:self.progressView];
+        [self addSubview:_progressView];
         _progressView.progress = 0.f;
         
-        [self.activityIndicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_activityIndicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.width.equalTo(@20);
             make.height.equalTo(@20);
             make.centerY.equalTo(@(self.center.y));
             make.centerX.equalTo(@(self.center.x));
         }];
         
-        [self.progressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        [_progressView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.equalTo(self).with.offset(5);
             make.right.equalTo(self).with.offset(-5);
             make.height.equalTo(@3);

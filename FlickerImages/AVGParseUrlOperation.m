@@ -17,7 +17,6 @@
     if (_container.dataFromFlickr) {
         
         NSError *error;
-        
         NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:_container.dataFromFlickr
                                                              options:0
                                                                error:&error];

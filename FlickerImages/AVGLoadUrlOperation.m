@@ -20,9 +20,7 @@
 
 - (instancetype)init {
     self = [super init];
-    
     if (self) {
-        
         NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
         self.session = [NSURLSession sessionWithConfiguration:sessionConfig];
     }
@@ -53,7 +51,7 @@
     
     self.sessionDataTask = [self.session dataTaskWithRequest:request
                                            completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                                               NSLog(@"loadurls");
+
                                                _container.dataFromFlickr = data;
                                                
                                                dispatch_semaphore_signal(semaphore);

@@ -6,9 +6,10 @@
 //  Copyright © 2017 iOS-School-1. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import "AVGSearchImageView.h"
 #import "AVGImageService.h"
+
+@class UIImage;
 
 #warning code style? forward declaration of protocols
 @protocol AVGFlickrCellImageServiceDelegate;
