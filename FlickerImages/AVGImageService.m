@@ -7,7 +7,6 @@
 //
 
 #import "AVGImageService.h"
-#import "AVGLoadImageOperation.h"
 #import "AVGBinaryImageOperation.h"
 
 
@@ -25,6 +24,8 @@
 @property (nonatomic, strong) NSCache *cache;
 @property (nonatomic, copy) NSString *urlString;
 
+@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+
 @end
 
 @implementation AVGImageService
@@ -33,6 +34,9 @@
     self = [super init];
     
     if (self) {
+        self.semaphore = dispatch_semaphore_create(0);
+        self.imageState = AVGImageStateNormal;
+        
         self.queue = [NSOperationQueue new];
         self.loadOperation = [AVGLoadImageOperation new];
         self.binaryOperation = [AVGBinaryImageOperation new];
@@ -42,12 +46,23 @@
     return  self;
 }
 
-- (void)cancelDownload {
-    if ([_loadOperation isExecuting]) {
-        [_loadOperation cancel];
-        NSLog(@"CANCELED");
-    }
+- (AVGImageProgressState)imageProgressState {
+    return _loadOperation.imageProgressState;
 }
+
+- (void)resume {
+    [_loadOperation resumeDownload];
+}
+
+- (void)pause {
+    [_loadOperation pauseDownload];
+}
+
+- (void)cancel {
+    [_loadOperation cancelDownload];
+}
+
+#pragma mark - AVGFlickrCellImageServiceDelegate
 
 - (void)loadImageFromUrlString:(NSString *)urlString
                       andCache:(NSCache *)cache
@@ -59,7 +74,13 @@
     [cell imageDownloadStarted];
     
     _loadOperation.urlString = urlString;
-    [_queue addOperation:_loadOperation];
+    if (_loadOperation.imageProgressState == AVGImageProgressStateNew) {
+        [_queue addOperation:_loadOperation];
+        _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
+    } else if (_loadOperation.imageProgressState == AVGImageProgressStatePaused) {
+        [_loadOperation resumeDownload];
+        _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
+    }
     
     _loadOperation.downloadProgressBlock = ^(float progress) {
         [cell updateImageDownloadProgress:progress];
@@ -94,6 +115,8 @@
             if (strongSelf.binarizedImage) {
                 [strongSelf.cache setObject:strongSelf.binarizedImage forKey:strongSelf.urlString];
             }
+            
+            _imageState = AVGImageStateBinarized;
             [cell imageBinarizeEndedWithImage:strongSelf.binarizedImage];
         }
 

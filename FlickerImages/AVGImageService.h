@@ -8,11 +8,23 @@
 
 @import Foundation;
 #import "AVGFlickrCell.h"
+#import "AVGLoadImageOperation.h"
+
+typedef NS_ENUM(NSInteger, AVGImageState) {
+    AVGImageStateNormal = 0,
+    AVGImageStateBinarized
+};
 
 @protocol AVGFlickrCellImageServiceDelegate;
 
 @interface AVGImageService : NSObject <AVGFlickrCellImageServiceDelegate>
 
-- (void)cancelDownload;
+@property (nonatomic, assign) AVGImageState imageState;
+
+- (AVGImageProgressState)imageProgressState;
+
+- (void)resume;
+- (void)pause;
+- (void)cancel;
 
 @end

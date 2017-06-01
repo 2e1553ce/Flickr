@@ -90,7 +90,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     dispatch_async(dispatch_get_main_queue(), ^{
         
         if (image) {
-            _filterButton.enabled = YES;
+            //_filterButton.enabled = YES;
             _searchedImageView.image = image;
             [_searchedImageView.activityIndicatorView stopAnimating];
             _searchedImageView.progressView.hidden = YES;
@@ -105,7 +105,6 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
         if (image) {
     #warning animation not working 
             [UIView animateWithDuration:1.0f animations:^{
-                _searchedImageView.thumbnailState = AVGThumbnailStateBinarized;
                 _filterButton.enabled = NO;
                 _searchedImageView.image = image;
                 [self setNeedsLayout];

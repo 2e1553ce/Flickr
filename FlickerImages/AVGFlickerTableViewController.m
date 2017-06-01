@@ -68,12 +68,17 @@
     }
     */
     // separate to another method
-    AVGImageService *imageService = [AVGImageService new];
+    AVGImageService *imageService = _imageServices[indexPath.row];
     cell.imageServiceDelegate = imageService;
-    [_imageServices addObject:imageService];
     
     AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
     UIImage *cachedImage = [_imageCache objectForKey:imageInfo.url];
+    
+    if (imageService.imageState == AVGImageStateBinarized) {
+        cell.filterButton.enabled = NO;
+    } else {
+        cell.filterButton.enabled = YES;
+    }
     
     if (cachedImage) {
         cell.searchedImageView.image = cachedImage;
@@ -85,7 +90,8 @@
     
     return cell;
 }
-
+#warning self & _
+#warning separate!
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -98,8 +104,19 @@
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-    AVGImageService *imageService = _imageServices[indexPath.row];
-    [imageService cancelDownload];
+    AVGImageService *service = _imageServices[indexPath.row];
+    AVGImageProgressState state = [service imageProgressState];
+    if (state == AVGImageProgressStateDownloading) {
+        [service pause];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(nonnull UITableViewCell *)cell forRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    AVGImageService *service = _imageServices[indexPath.row];
+    AVGImageProgressState state = [service imageProgressState];
+    if (state == AVGImageProgressStatePaused) {
+        [service resume];
+    }
 }
 
 #pragma mark UISearchBarDelegate
@@ -110,7 +127,14 @@
     
     [_urlService loadInformationWithText:searchText];
     [_urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
+        
         _arrayOfImagesInformation = imageUrls;
+        NSUInteger countOfImages = [imageUrls count];
+        for (NSUInteger i = 0; i < countOfImages; i++) {
+            AVGImageService *imageService = [AVGImageService new];
+            [_imageServices addObject:imageService];
+        }
+        
         NSIndexSet *set = [NSIndexSet indexSetWithIndex:0];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView beginUpdates];

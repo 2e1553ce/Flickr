@@ -18,7 +18,9 @@
 @property (nonatomic) float downloadSize;
 @property (nonatomic) float downloadProgress;
 
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+@property (nonatomic, strong) dispatch_semaphore_t dataTaskSemaphore;
+@property (nonatomic, strong) dispatch_semaphore_t progressSemaphore;
+@property (nonatomic, assign) BOOL isPaused;
 
 @end
 
@@ -29,6 +31,7 @@
     
     NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+    self.imageProgressState = AVGImageProgressStateNew;
     
     return [self initWithUrlString:nil];
 }
@@ -37,6 +40,7 @@
     self = [super init];
     if (self) {
         self.urlString = urlString;
+        _isPaused = NO;
     }
     return self;
 }
@@ -52,13 +56,39 @@
         [request setURL:photoUrl];
         [request setHTTPMethod:@"GET"];
         
-        self.semaphore = dispatch_semaphore_create(0);
+        self.dataTaskSemaphore = dispatch_semaphore_create(0);
+        self.progressSemaphore = dispatch_semaphore_create(0);
         
         self.sessionDataTask = [self.session dataTaskWithURL:photoUrl];
         [_sessionDataTask resume];
         
-        dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_wait(_dataTaskSemaphore, DISPATCH_TIME_FOREVER);
     }
+}
+
+- (void)resumeDownload {
+    _imageProgressState = AVGImageProgressStateDownloading;
+    NSLog(@"DOWNLOADING");
+    //dispatch_semaphore_signal(_progressSemaphore);
+    [_sessionDataTask resume];
+}
+
+- (void)pauseDownload {
+    /*
+    if ([self isExecuting]) {
+        _imageProgressState = AVGImageProgressStatePaused;
+        NSLog(@"PAUSED");
+        //_isPaused = YES;
+    }*/
+    _imageProgressState = AVGImageProgressStatePaused;
+    [_sessionDataTask suspend];
+}
+
+- (void)cancelDownload {
+    [self cancel];
+    _imageProgressState = AVGImageProgressStateCancelled;
+    NSLog(@"CANCELED");
+    dispatch_semaphore_signal(_progressSemaphore);
 }
 
 #pragma mark - NSURLSessionDelegate
@@ -85,17 +115,22 @@ didReceiveResponse:(NSURLResponse *)response
         _downloadProgressBlock(_downloadProgress);
     }
     
+    if (_isPaused) {
+         dispatch_semaphore_wait(_progressSemaphore, DISPATCH_TIME_FOREVER);
+        NSLog(@"Operation PAAUUUUUSSSEEEDDD");
+    }
+    
     if (self.isCancelled) {
         _downloadedImage = nil;
         NSLog(@"Operation CANCELLLLLLEEEEEEEDDDDD");
         _downloadProgress = 0.f;
         [_sessionDataTask cancel];
-        dispatch_semaphore_signal(self.semaphore);
+        dispatch_semaphore_signal(_dataTaskSemaphore);
     }
     
     if (_downloadProgress == 1.0) {
         _downloadedImage = [UIImage imageWithData:_dataToDownload];
-        dispatch_semaphore_signal(_semaphore);
+        dispatch_semaphore_signal(_dataTaskSemaphore);
     }
 }
 
