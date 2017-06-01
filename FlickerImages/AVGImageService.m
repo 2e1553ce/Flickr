@@ -8,9 +8,7 @@
 
 #import "AVGImageService.h"
 #import "AVGBinaryImageOperation.h"
-
-
-#import "AVGFlickrCell.h"
+#import "AVGFeedCollectionViewCell.h"
 
 @interface AVGImageService () <AVGFlickrCellImageServiceDelegate>
 
@@ -66,7 +64,7 @@
 
 - (void)loadImageFromUrlString:(NSString *)urlString
                       andCache:(NSCache *)cache
-                       forCell:(AVGFlickrCell *)cell {
+                       forCell:(AVGFeedCollectionViewCell *)cell {
     
     _cache = cache;
     _urlString = urlString;
@@ -100,7 +98,7 @@
     };
 }
 
-- (void)didClickFilterButtonAtCell:(AVGFlickrCell *)cell {
+- (void)didClickFilterButtonAtCell:(AVGFeedCollectionViewCell *)cell {
     
 #warning Create container
     _binaryOperation.filteredImage = _loadOperation.downloadedImage;

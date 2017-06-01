@@ -9,20 +9,17 @@
 #import "AVGFlickerTableViewController.h"
 #import "AVGFlickrCell.h"
 #import "AVGImageInformation.h"
-#import "AVGLoadImageOperation.h"
-#import "AVGBinaryImageOperation.h"
 #import "AVGImageService.h"
 #import "AVGUrlService.h"
 
 @interface AVGFlickerTableViewController () <UISearchBarDelegate>
 
-@property (strong, nonatomic) NSArray <AVGImageInformation *> *arrayOfImagesInformation;
-@property (strong, nonatomic) NSOperationQueue *queue;
+@property (nonatomic, strong) NSArray <AVGImageInformation *> *arrayOfImagesInformation;
+@property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) AVGUrlService *urlService;
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) NSCache *imageCache;
 
-@property (nonatomic, strong) NSMutableArray <AVGBinaryImageOperation *> *binaryOperations;
 @property (nonatomic, strong) NSMutableArray <AVGImageService *> *imageServices;
 
 @end
@@ -46,7 +43,6 @@
     self.imageCache = [NSCache new];
     _imageCache.countLimit = 50;
     
-    self.binaryOperations = [NSMutableArray new];
     self.imageServices = [NSMutableArray new];
 }
 

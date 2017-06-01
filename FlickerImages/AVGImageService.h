@@ -7,7 +7,6 @@
 //
 
 @import Foundation;
-#import "AVGFlickrCell.h"
 #import "AVGLoadImageOperation.h"
 
 typedef NS_ENUM(NSInteger, AVGImageState) {
