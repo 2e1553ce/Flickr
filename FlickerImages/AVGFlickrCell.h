@@ -7,12 +7,19 @@
 //
 
 #import "AVGSearchImageView.h"
-#import "AVGImageService.h"
 
-@class UIImage;
+@class UIImage, AVGFlickrCell;
 
-#warning code style? forward declaration of protocols
-@protocol AVGFlickrCellImageServiceDelegate;
+@protocol AVGFlickrCellImageServiceDelegate
+
+@required
+- (void)loadImageFromUrlString:(NSString *)urlString
+                      andCache:(NSCache *)cache
+                       forCell:(AVGFlickrCell *)cell;
+
+- (void)didClickFilterButtonAtCell:(AVGFlickrCell *)cell;
+
+@end
 
 extern NSString *const flickrCellIdentifier;
 
@@ -28,16 +35,5 @@ extern NSString *const flickrCellIdentifier;
 - (void)imageBinarizeEndedWithImage:(UIImage *)image;
 
 + (CGFloat)heightForCell;
-
-@end
-
-@protocol AVGFlickrCellImageServiceDelegate
-
-@required
-- (void)loadImageFromUrlString:(NSString *)urlString
-                      andCache:(NSCache *)cache
-                       forCell:(AVGFlickrCell *)cell;
-
-- (void)didClickFilterButtonAtCell:(AVGFlickrCell *)cell;
 
 @end

@@ -8,13 +8,12 @@
 
 @import Foundation;
 #import "AVGLoadImageOperation.h"
+#import "AVGFlickrCell.h"
 
 typedef NS_ENUM(NSInteger, AVGImageState) {
     AVGImageStateNormal = 0,
     AVGImageStateBinarized
 };
-
-@protocol AVGFlickrCellImageServiceDelegate;
 
 @interface AVGImageService : NSObject <AVGFlickrCellImageServiceDelegate>
 

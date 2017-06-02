@@ -26,7 +26,6 @@
 
 @implementation AVGLoadImageOperation
 
-#warning inits
 - (instancetype)init {
     
     NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];

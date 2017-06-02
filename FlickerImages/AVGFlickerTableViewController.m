@@ -56,13 +56,7 @@
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     cell.searchedImageView.image = nil;
-    #warning no need
-    /*
-    if (!cell) {
-        NSLog(@"Cell created");
-        cell = [[AVGFlickrCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:flickrCellIdentifier];
-    }
-    */
+    
     // separate to another method
     AVGImageService *imageService = _imageServices[indexPath.row];
     cell.imageServiceDelegate = imageService;
