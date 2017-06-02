@@ -10,7 +10,7 @@
 #import "AVGBinaryImageOperation.h"
 #import "AVGFlickrCell.h"
 
-@interface AVGImageService () <AVGFlickrCellImageServiceDelegate>
+@interface AVGImageService ()
 
 @property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) AVGLoadImageOperation *loadOperation;
@@ -20,6 +20,7 @@
 @property (nonatomic, strong) UIImage *binarizedImage;
 
 @property (nonatomic, strong) NSCache *cache;
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @property (nonatomic, copy) NSString *urlString;
 
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
@@ -49,7 +50,18 @@
 }
 
 - (void)resume {
-    [_loadOperation resumeDownload];
+    //[_loadOperation resumeDownload];
+#warning на ячейках с картинками прогресс бар + индикатор
+#warning падает если фильтр 2 раза
+    if (_loadOperation.imageProgressState == AVGImageProgressStateCancelled) {
+        [_queue cancelAllOperations];
+        [_loadOperation cancel];
+        self.loadOperation = [AVGLoadImageOperation new];
+        [_binaryOperation addDependency:_loadOperation];
+        //[_queue addOperation:_loadOperation];
+        [self loadImageFromUrlString:_urlString andCache:_cache forRowAtIndexPath:_indexPath];
+        NSLog(@"Downloading GAIIIIIIN");
+    }
 }
 
 - (void)pause {
@@ -60,16 +72,17 @@
     [_loadOperation cancelDownload];
 }
 
-#pragma mark - AVGFlickrCellImageServiceDelegate
+#pragma mark - Operations at image
 
 - (void)loadImageFromUrlString:(NSString *)urlString
                       andCache:(NSCache *)cache
-                       forCell:(AVGFlickrCell *)cell {
+                       forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     _cache = cache;
     _urlString = urlString;
+    _indexPath = indexPath;
     
-    [cell imageDownloadStarted];
+    [_delegate serviceStartedImageDownload:self forRowAtIndexPath:indexPath];
     
     _loadOperation.urlString = urlString;
     if (_loadOperation.imageProgressState == AVGImageProgressStateNew) {
@@ -80,11 +93,14 @@
         _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
     }
     
+    __weak typeof(self) weakSelf = self;
     _loadOperation.downloadProgressBlock = ^(float progress) {
-        [cell updateImageDownloadProgress:progress];
+        __strong typeof(self) strongSelf = weakSelf;
+        if (strongSelf) {
+             [strongSelf.delegate service:strongSelf updateImageDownloadProgress:progress forRowAtIndexPath:indexPath];
+        }
     };
 
-    __weak typeof(self) weakSelf = self;
     _loadOperation.completionBlock = ^{
         __strong typeof(self) strongSelf = weakSelf;
         if (strongSelf) {
@@ -93,12 +109,12 @@
             if (strongSelf.downloadedImage) {
                 [strongSelf.cache setObject:strongSelf.downloadedImage forKey:urlString];
             }
-            [cell imageDownloadEndedWithImage:strongSelf.downloadedImage];
+            [strongSelf.delegate service:strongSelf downloadedImage:strongSelf.downloadedImage forRowAtIndexPath:indexPath];
         }
     };
 }
 
-- (void)didClickFilterButtonAtCell:(AVGFlickrCell *)cell {
+- (void)filterImageforRowAtIndexPath:(NSIndexPath *)indexPath {
     
 #warning Create container
     _binaryOperation.filteredImage = _loadOperation.downloadedImage;
@@ -115,9 +131,9 @@
             }
             
             _imageState = AVGImageStateBinarized;
-            [cell imageBinarizeEndedWithImage:strongSelf.binarizedImage];
+            [strongSelf.delegate service:strongSelf binarizedImage:strongSelf.binarizedImage forRowAtIndexPath:indexPath];
+    
         }
-
     };
 }
 

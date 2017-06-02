@@ -12,7 +12,7 @@
 #import "AVGImageService.h"
 #import "AVGUrlService.h"
 
-@interface AVGFlickerTableViewController () <UISearchBarDelegate>
+@interface AVGFlickerTableViewController () <UISearchBarDelegate, AVGImageServiceDelegate, AVGFlickrCellDelegate>
 
 @property (nonatomic, strong) NSArray <AVGImageInformation *> *arrayOfImagesInformation;
 @property (nonatomic, strong) NSOperationQueue *queue;
@@ -41,7 +41,7 @@
     
     self.queue = [NSOperationQueue new];
     self.imageCache = [NSCache new];
-    _imageCache.countLimit = 50;
+    //_imageCache.countLimit = 50;
     
     self.imageServices = [NSMutableArray new];
 }
@@ -55,11 +55,13 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
+    cell.delegate = self;
     cell.searchedImageView.image = nil;
     
     // separate to another method
     AVGImageService *imageService = _imageServices[indexPath.row];
-    cell.imageServiceDelegate = imageService;
+    imageService.delegate = self;
+    //cell.imageServiceDelegate = imageService;
     
     AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
     UIImage *cachedImage = [_imageCache objectForKey:imageInfo.url];
@@ -73,9 +75,8 @@
     if (cachedImage) {
         cell.searchedImageView.image = cachedImage;
     } else {
-        [cell.imageServiceDelegate loadImageFromUrlString:imageInfo.url andCache:self.imageCache forCell:cell];
+        [imageService loadImageFromUrlString:imageInfo.url andCache:self.imageCache forRowAtIndexPath:(NSIndexPath *)indexPath];
     }
-    // pause/resume
     // page loading
     
     return cell;
@@ -97,14 +98,14 @@
     AVGImageService *service = _imageServices[indexPath.row];
     AVGImageProgressState state = [service imageProgressState];
     if (state == AVGImageProgressStateDownloading) {
-        [service pause];
+        [service cancel];
     }
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(nonnull UITableViewCell *)cell forRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     AVGImageService *service = _imageServices[indexPath.row];
     AVGImageProgressState state = [service imageProgressState];
-    if (state == AVGImageProgressStatePaused) {
+    if (state == AVGImageProgressStateCancelled) {
         [service resume];
     }
 }
@@ -112,6 +113,9 @@
 #pragma mark UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    
+    [_imageServices removeAllObjects];
+    [_queue cancelAllOperations];
     
     NSString *searchText = searchBar.text;
     
@@ -133,6 +137,60 @@
             [self.searchBar endEditing:YES];
         });
     }];
+}
+
+#pragma mark - AVGFlickrCellDelegate
+
+- (void)filterImageForCell:(AVGFlickrCell *)cell {
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    AVGImageService *service = _imageServices[indexPath.row];
+    [service filterImageforRowAtIndexPath:indexPath];
+}
+
+#pragma mark - AVGImageServiceDelegate
+
+- (void)serviceStartedImageDownload:(AVGImageService *)service forRowAtIndexPath:(NSIndexPath*)indexPath {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        AVGFlickrCell *cell = (AVGFlickrCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        cell.searchedImageView.progressView.hidden = NO;
+        cell.searchedImageView.activityIndicatorView.hidden = NO;
+        cell.searchedImageView.progressView.progress = 0.f;
+        [cell.searchedImageView.activityIndicatorView startAnimating];
+    });
+}
+
+- (void)service:(AVGImageService *)service updateImageDownloadProgress:(float)progress forRowAtIndexPath:(NSIndexPath*)indexPath {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        AVGFlickrCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+        cell.searchedImageView.progressView.progress = progress;
+    });
+}
+
+- (void)service:(AVGImageService *)service downloadedImage:(UIImage *)image forRowAtIndexPath:(NSIndexPath*)indexPath {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (image) {
+            AVGFlickrCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            cell.searchedImageView.image = image;
+            [cell.searchedImageView.activityIndicatorView stopAnimating];
+            cell.searchedImageView.progressView.hidden = YES;
+            [cell setNeedsLayout];
+        }
+    });
+
+}
+
+- (void)service:(AVGImageService *)service binarizedImage:(UIImage *)image forRowAtIndexPath:(NSIndexPath*)indexPath {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (image) {
+            AVGFlickrCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+#warning animation not working
+            [UIView animateWithDuration:1.0f animations:^{
+                cell.filterButton.enabled = NO;
+                cell.searchedImageView.image = image;
+                [cell setNeedsLayout];
+            }];
+        }
+    });
 }
 
 @end

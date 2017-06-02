@@ -10,14 +10,10 @@
 
 @class UIImage, AVGFlickrCell;
 
-@protocol AVGFlickrCellImageServiceDelegate
+@protocol AVGFlickrCellDelegate <NSObject>
 
 @required
-- (void)loadImageFromUrlString:(NSString *)urlString
-                      andCache:(NSCache *)cache
-                       forCell:(AVGFlickrCell *)cell;
-
-- (void)didClickFilterButtonAtCell:(AVGFlickrCell *)cell;
+- (void)filterImageForCell:(AVGFlickrCell *)cell;
 
 @end
 
@@ -27,12 +23,7 @@ extern NSString *const flickrCellIdentifier;
 
 @property (nonatomic, strong) AVGSearchImageView *searchedImageView;
 @property (nonatomic, strong) UIButton *filterButton;
-@property (nonatomic, weak) id <AVGFlickrCellImageServiceDelegate> imageServiceDelegate;
-
-- (void)updateImageDownloadProgress:(float)progress;
-- (void)imageDownloadStarted;
-- (void)imageDownloadEndedWithImage:(UIImage *)image;
-- (void)imageBinarizeEndedWithImage:(UIImage *)image;
+@property (nonatomic, weak) id <AVGFlickrCellDelegate> delegate;
 
 + (CGFloat)heightForCell;
 

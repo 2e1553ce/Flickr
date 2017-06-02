@@ -119,6 +119,7 @@
 			children = (
 				04C2696B1ED049B400D88E06 /* AVGFlickerTableViewController.h */,
 				04C2696C1ED049B400D88E06 /* AVGFlickerTableViewController.m */,
+				19A4B5DC1EE187CA00DD511E /* Delegates & Datasources */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -233,6 +234,13 @@
 				193BCC3D1ED5A00100B7BAF3 /* AVGBinaryImageOperation.m */,
 			);
 			name = "Filter image";
+			sourceTree = "<group>";
+		};
+		19A4B5DC1EE187CA00DD511E /* Delegates & Datasources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "Delegates & Datasources";
 			sourceTree = "<group>";
 		};
 		19C016E01ED368BC000A18DF /* Service */ = {

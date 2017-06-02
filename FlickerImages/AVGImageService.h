@@ -8,16 +8,35 @@
 
 @import Foundation;
 #import "AVGLoadImageOperation.h"
-#import "AVGFlickrCell.h"
+
+@class AVGImageService;
 
 typedef NS_ENUM(NSInteger, AVGImageState) {
     AVGImageStateNormal = 0,
     AVGImageStateBinarized
 };
 
-@interface AVGImageService : NSObject <AVGFlickrCellImageServiceDelegate>
+@protocol AVGImageServiceDelegate <NSObject>
+
+@required
+- (void)serviceStartedImageDownload:(AVGImageService *)service forRowAtIndexPath:(NSIndexPath*)indexPath;
+- (void)service:(AVGImageService *)service updateImageDownloadProgress:(float)progress forRowAtIndexPath:(NSIndexPath*)indexPath;
+- (void)service:(AVGImageService *)service downloadedImage:(UIImage *)image forRowAtIndexPath:(NSIndexPath*)indexPath;
+
+@optional
+- (void)service:(AVGImageService *)service binarizedImage:(UIImage *)image forRowAtIndexPath:(NSIndexPath*)indexPath;
+
+@end
+
+@interface AVGImageService : NSObject
 
 @property (nonatomic, assign) AVGImageState imageState;
+@property (nonatomic, weak) id <AVGImageServiceDelegate> delegate;
+
+- (void)loadImageFromUrlString:(NSString *)urlString
+                      andCache:(NSCache *)cache
+                       forRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)filterImageforRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (AVGImageProgressState)imageProgressState;
 

@@ -72,51 +72,10 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     return 160;
 }
 
-#pragma mark - Image operations
-
-- (void)updateImageDownloadProgress:(float)progress {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        _searchedImageView.progressView.progress = progress;
-    });
-}
-
-- (void)imageDownloadStarted {
-    _searchedImageView.progressView.hidden = NO;
-    _searchedImageView.progressView.progress = 0.f;
-    [_searchedImageView.activityIndicatorView startAnimating];
-}
-
-- (void)imageDownloadEndedWithImage:(UIImage *)image {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        if (image) {
-            //_filterButton.enabled = YES;
-            _searchedImageView.image = image;
-            [_searchedImageView.activityIndicatorView stopAnimating];
-            _searchedImageView.progressView.hidden = YES;
-            [self setNeedsLayout];
-        }
-    });
-}
-
-- (void)imageBinarizeEndedWithImage:(UIImage *)image {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        if (image) {
-    #warning animation not working 
-            [UIView animateWithDuration:1.0f animations:^{
-                _filterButton.enabled = NO;
-                _searchedImageView.image = image;
-                [self setNeedsLayout];
-            }];
-        }
-    });
-}
-
 #pragma mark - Actions
 
 - (void)filterButtonAction:(UIButton *)sender {
-    [_imageServiceDelegate didClickFilterButtonAtCell:self];
+    [_delegate filterImageForCell:self];
 }
 
 @end

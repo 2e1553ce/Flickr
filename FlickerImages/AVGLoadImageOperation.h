@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, AVGImageProgressState) {
     AVGImageProgressStateNew = 0,
     AVGImageProgressStateDownloading,
     AVGImageProgressStatePaused,
+    AVGImageProgressStateDownloaded,
     AVGImageProgressStateCancelled
 };
 
