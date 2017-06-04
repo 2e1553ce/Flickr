@@ -14,6 +14,8 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 
 @implementation AVGFlickrCell
 
+#pragma mark - Initialization
+
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
@@ -22,6 +24,8 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     
     return self;
 }
+
+#pragma mark - Reusing
 
 - (void)prepareForReuse {
     _searchedImageView.image = nil;

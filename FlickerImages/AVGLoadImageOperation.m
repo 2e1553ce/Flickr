@@ -8,6 +8,7 @@
 
 @import UIKit;
 #import "AVGLoadImageOperation.h"
+#import "AVGOperationsContainer.h"
 
 @interface AVGLoadImageOperation () <NSURLSessionDelegate>
 
@@ -25,8 +26,9 @@
 
 @implementation AVGLoadImageOperation
 
+#pragma mark - Initialization
+
 - (instancetype)init {
-    
     NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:sessionConfig delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     self.imageProgressState = AVGImageProgressStateNew;
@@ -41,6 +43,8 @@
     }
     return self;
 }
+
+#pragma mark - Load image
 
 - (void)main {
     
@@ -63,22 +67,17 @@
     }
 }
 
+#pragma mark Resume, pause, cancel load operation
+
 - (void)resumeDownload {
     
     _imageProgressState = AVGImageProgressStateDownloading;
     NSLog(@"DOWNLOADING");
-    //dispatch_semaphore_signal(_progressSemaphore);
     [_sessionDataTask resume];
 
 }
 
 - (void)pauseDownload {
-    /*
-    if ([self isExecuting]) {
-        _imageProgressState = AVGImageProgressStatePaused;
-        NSLog(@"PAUSED");
-        //_isPaused = YES;
-    }*/
     NSLog(@"TASK PAAUUUUUSSSEEEDDD");
     _imageProgressState = AVGImageProgressStatePaused;
     [_sessionDataTask cancel]; // :DD
@@ -118,7 +117,7 @@ didReceiveResponse:(NSURLResponse *)response
     
     if (_downloadProgress == 1.0) {
         _imageProgressState = AVGImageProgressStateDownloaded;
-        _downloadedImage = [UIImage imageWithData:_dataToDownload];
+        _operationDataContainer.image = [UIImage imageWithData:_dataToDownload];
         dispatch_semaphore_signal(_dataTaskSemaphore);
         NSLog(@"DOWNLOOOOOOOOOOOOOAAAADED!");
     }

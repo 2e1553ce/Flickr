@@ -7,11 +7,14 @@
 //
 
 @import Foundation;
-@class AVGLoadParseContainer;
+@class AVGOperationsContainer;
 
 @interface AVGLoadUrlOperation : NSOperation
 
 @property (nonatomic, copy) NSString *searchText;
-@property (nonatomic, strong) AVGLoadParseContainer *container;
+@property (nonatomic, assign) NSInteger page;
+@property (nonatomic, assign) NSInteger perPage;
+
+@property (nonatomic, strong) AVGOperationsContainer *container;
 
 @end

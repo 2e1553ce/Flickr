@@ -20,7 +20,7 @@
         self.layer.shouldRasterize = YES;
          */
         
-        // Constraints for indicator
+        // Constraints for indicator & progress
         self.activityIndicatorView = [UIActivityIndicatorView new];
         _activityIndicatorView.color = UIColor.grayColor;
         [self addSubview:_activityIndicatorView];

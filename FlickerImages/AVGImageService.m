@@ -9,15 +9,14 @@
 #import "AVGImageService.h"
 #import "AVGBinaryImageOperation.h"
 #import "AVGFlickrCell.h"
+#import "AVGOperationsContainer.h"
 
 @interface AVGImageService ()
 
 @property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) AVGLoadImageOperation *loadOperation;
 @property (nonatomic, strong) AVGBinaryImageOperation *binaryOperation;
-
-@property (nonatomic, strong) UIImage *downloadedImage;
-@property (nonatomic, strong) UIImage *binarizedImage;
+@property (nonatomic, strong) AVGOperationsContainer *operationDataContainer;
 
 @property (nonatomic, strong) NSCache *cache;
 @property (nonatomic, strong) NSIndexPath *indexPath;
@@ -29,6 +28,8 @@
 
 @implementation AVGImageService
 
+#pragma mark - Initialization
+
 - (instancetype)init {
     self = [super init];
     
@@ -39,28 +40,34 @@
         self.queue = [NSOperationQueue new];
         self.loadOperation = [AVGLoadImageOperation new];
         self.binaryOperation = [AVGBinaryImageOperation new];
+        self.operationDataContainer = [AVGOperationsContainer new];
+        
+        _loadOperation.operationDataContainer = _operationDataContainer;
+        
+        _binaryOperation.operationDataContainer = _operationDataContainer;
         [_binaryOperation addDependency:_loadOperation];
+        
     }
     
     return  self;
 }
 
+#pragma mark - Progess state for image load
+
 - (AVGImageProgressState)imageProgressState {
     return _loadOperation.imageProgressState;
 }
 
+#pragma mark - Resume, pause , cancel image load
+
 - (void)resume {
-    //[_loadOperation resumeDownload];
-#warning на ячейках с картинками прогресс бар + индикатор
-#warning падает если фильтр 2 раза
     if (_loadOperation.imageProgressState == AVGImageProgressStateCancelled) {
         [_queue cancelAllOperations];
         [_loadOperation cancel];
         self.loadOperation = [AVGLoadImageOperation new];
         [_binaryOperation addDependency:_loadOperation];
-        //[_queue addOperation:_loadOperation];
         [self loadImageFromUrlString:_urlString andCache:_cache forRowAtIndexPath:_indexPath];
-        NSLog(@"Downloading GAIIIIIIN");
+        NSLog(@"Downloading AGAIIIIIIN");
     }
 }
 
@@ -72,7 +79,7 @@
     [_loadOperation cancelDownload];
 }
 
-#pragma mark - Operations at image
+#pragma mark - Operations on image
 
 - (void)loadImageFromUrlString:(NSString *)urlString
                       andCache:(NSCache *)cache
@@ -82,17 +89,20 @@
     _urlString = urlString;
     _indexPath = indexPath;
     
+    // Notificate controller for image load, start actinityIndicator and progressView
     [_delegate serviceStartedImageDownload:self forRowAtIndexPath:indexPath];
     
     _loadOperation.urlString = urlString;
     if (_loadOperation.imageProgressState == AVGImageProgressStateNew) {
         [_queue addOperation:_loadOperation];
         _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
+        
     } else if (_loadOperation.imageProgressState == AVGImageProgressStatePaused) {
         [_loadOperation resumeDownload];
         _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
     }
     
+    // Update progressView
     __weak typeof(self) weakSelf = self;
     _loadOperation.downloadProgressBlock = ^(float progress) {
         __strong typeof(self) strongSelf = weakSelf;
@@ -101,40 +111,46 @@
         }
     };
 
+    // Notificate controller for stop activityIndicator and progressView
     _loadOperation.completionBlock = ^{
         __strong typeof(self) strongSelf = weakSelf;
         if (strongSelf) {
             
-            strongSelf.downloadedImage = strongSelf.loadOperation.downloadedImage;
-            if (strongSelf.downloadedImage) {
-                [strongSelf.cache setObject:strongSelf.downloadedImage forKey:urlString];
+            //strongSelf.downloadedImage = strongSelf.loadOperation.downloadedImage;
+            if (strongSelf.operationDataContainer.image) {
+                [strongSelf.cache setObject:strongSelf.operationDataContainer.image forKey:urlString];
             }
-            [strongSelf.delegate service:strongSelf downloadedImage:strongSelf.downloadedImage forRowAtIndexPath:indexPath];
+            [strongSelf.delegate service:strongSelf downloadedImage:strongSelf.operationDataContainer.image forRowAtIndexPath:indexPath];
         }
     };
 }
 
 - (void)filterImageforRowAtIndexPath:(NSIndexPath *)indexPath {
     
-#warning Create container
-    _binaryOperation.filteredImage = _loadOperation.downloadedImage;
-    [_queue addOperation:_binaryOperation];
+    if (_binaryOperation.isFinished) {
+        return;
+    }
     
-    __weak typeof(self) weakSelf = self;
-    _binaryOperation.completionBlock = ^{
-        __strong typeof(self) strongSelf = weakSelf;
-        if (strongSelf) {
-            
-            strongSelf.binarizedImage = strongSelf.binaryOperation.filteredImage;
-            if (strongSelf.binarizedImage) {
-                [strongSelf.cache setObject:strongSelf.binarizedImage forKey:strongSelf.urlString];
+    NSArray *opertions = _queue.operations;
+    if (![opertions containsObject:_binaryOperation]) {
+        [_queue addOperation:_binaryOperation];
+        
+        __weak typeof(self) weakSelf = self;
+        _binaryOperation.completionBlock = ^{
+            __strong typeof(self) strongSelf = weakSelf;
+            if (strongSelf) {
+                
+                //strongSelf.binarizedImage = strongSelf.binaryOperation.filteredImage;
+                if (strongSelf.operationDataContainer.image) {
+                    [strongSelf.cache setObject:strongSelf.operationDataContainer.image forKey:strongSelf.urlString];
+                }
+                
+                _imageState = AVGImageStateBinarized;
+                [strongSelf.delegate service:strongSelf binarizedImage:strongSelf.operationDataContainer.image forRowAtIndexPath:indexPath];
+                
             }
-            
-            _imageState = AVGImageStateBinarized;
-            [strongSelf.delegate service:strongSelf binarizedImage:strongSelf.binarizedImage forRowAtIndexPath:indexPath];
-    
-        }
-    };
+        };
+    }
 }
 
 @end

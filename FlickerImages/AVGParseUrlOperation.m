@@ -7,10 +7,12 @@
 //
 
 #import "AVGParseUrlOperation.h"
-#import "AVGLoadParseContainer.h"
+#import "AVGOperationsContainer.h"
 #import "AVGImageInformation.h"
 
 @implementation AVGParseUrlOperation
+
+#pragma mark - Parse urls
 
 - (void)main {
     

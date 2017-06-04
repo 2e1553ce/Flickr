@@ -12,9 +12,11 @@
 
 @interface AVGUrlService : NSObject
 
+@property (nonatomic, assign) NSInteger page;
 @property (nonatomic, copy) NSArray <AVGImageInformation *> *imagesUrls;
 
-- (void)loadInformationWithText:(NSString *)text;
+- (void)loadInformationWithText:(NSString *)text
+                        forPage:(NSInteger)page;
 - (void)parseInformationWithCompletionHandler:(void(^)(NSArray *imageUrls))completion;
 
 @end

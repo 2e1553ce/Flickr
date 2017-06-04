@@ -23,7 +23,7 @@ extern NSString *const flickrCellIdentifier;
 
 @property (nonatomic, strong) AVGSearchImageView *searchedImageView;
 @property (nonatomic, strong) UIButton *filterButton;
-@property (nonatomic, weak) id <AVGFlickrCellDelegate> delegate;
+@property (nonatomic, weak) id<AVGFlickrCellDelegate> delegate;
 
 + (CGFloat)heightForCell;
 

@@ -8,7 +8,7 @@
 
 @import  Foundation;
 
-@class UIImage;
+@class UIImage, AVGOperationsContainer;
 
 typedef NS_ENUM(NSInteger, AVGImageProgressState) {
     AVGImageProgressStateNew = 0,
@@ -23,9 +23,9 @@ typedef void (^downloadProgressBlock)(float progress);
 @interface AVGLoadImageOperation : NSOperation
 
 @property (nonatomic, copy) NSString *urlString;
-@property (nonatomic, strong) UIImage *downloadedImage;
 @property (nonatomic, copy) downloadProgressBlock downloadProgressBlock;
 @property (nonatomic, assign) AVGImageProgressState imageProgressState;
+@property (nonatomic, strong) AVGOperationsContainer *operationDataContainer;
 
 - (void)resumeDownload;
 - (void)pauseDownload;

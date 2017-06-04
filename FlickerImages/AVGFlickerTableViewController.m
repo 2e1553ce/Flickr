@@ -14,17 +14,23 @@
 
 @interface AVGFlickerTableViewController () <UISearchBarDelegate, AVGImageServiceDelegate, AVGFlickrCellDelegate>
 
-@property (nonatomic, strong) NSArray <AVGImageInformation *> *arrayOfImagesInformation;
-@property (nonatomic, strong) NSOperationQueue *queue;
-@property (nonatomic, strong) AVGUrlService *urlService;
-@property (nonatomic, strong) UISearchBar *searchBar;
-@property (nonatomic, strong) NSCache *imageCache;
+@property (nonatomic, strong) NSCache *imageCache; // need service
 
+@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic, copy)   NSString *searchText;
+@property (nonatomic, assign) NSInteger page;
+
+@property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) NSMutableArray <AVGImageService *> *imageServices;
+@property (nonatomic, strong) NSMutableArray <AVGImageInformation *> *arrayOfImagesInformation;
+@property (nonatomic, strong) AVGUrlService *urlService;
+@property (nonatomic, assign) BOOL isLoading;
 
 @end
 
 @implementation AVGFlickerTableViewController
+
+#pragma mark - View controller life cycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -33,18 +39,63 @@
     [self.tableView registerClass:[AVGFlickrCell class] forCellReuseIdentifier:flickrCellIdentifier];
     
     self.urlService = [AVGUrlService new];
+    self.queue = [NSOperationQueue new];
+    self.imageCache = [NSCache new];
+    self.imageServices = [NSMutableArray new];
+    self.isLoading = YES;
+    
     CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40.f);
     self.searchBar = [[UISearchBar alloc] initWithFrame:bounds];
     _searchBar.delegate = self;
     _searchBar.placeholder = @"Поиск";
     self.tableView.tableHeaderView = self.searchBar;
-    
-    self.queue = [NSOperationQueue new];
-    self.imageCache = [NSCache new];
-    //_imageCache.countLimit = 50;
-    
-    self.imageServices = [NSMutableArray new];
 }
+
+#pragma mark - Download when scrolling
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height) {
+        if (!_isLoading) {
+            _isLoading = YES;
+            [self loadImages];
+        }
+    }
+}
+
+#pragma mark - Page loading (AVGImageService.m contains how many images load per page)
+
+- (void)loadImages {
+    _page++;
+    [_urlService loadInformationWithText:_searchText forPage:_page];
+    [_urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
+        
+        [_arrayOfImagesInformation addObjectsFromArray:[imageUrls mutableCopy]];
+        NSUInteger countOfImages = [imageUrls count];
+        for (NSUInteger i = 0; i < countOfImages; i++) {
+            AVGImageService *imageService = [AVGImageService new];
+            [_imageServices addObject:imageService];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSMutableArray *arrayOfIndexPathes = [[NSMutableArray alloc] init];
+            
+            for(int i = (int)[_arrayOfImagesInformation count] - (int)[imageUrls count]; i < [_arrayOfImagesInformation count]; ++i){
+                
+                [arrayOfIndexPathes addObject:[NSIndexPath indexPathForRow:i inSection:0]];
+            }
+            
+            [self.tableView beginUpdates];
+            [self.tableView insertRowsAtIndexPaths:arrayOfIndexPathes withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView endUpdates];
+            [self.searchBar endEditing:YES];
+            _isLoading = NO;
+        });
+    }];
+
+}
+
+#warning fix downloading bug
 
 #pragma mark UITableViewDataSource
 
@@ -56,12 +107,10 @@
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     cell.delegate = self;
-    cell.searchedImageView.image = nil;
     
     // separate to another method
     AVGImageService *imageService = _imageServices[indexPath.row];
     imageService.delegate = self;
-    //cell.imageServiceDelegate = imageService;
     
     AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
     UIImage *cachedImage = [_imageCache objectForKey:imageInfo.url];
@@ -73,16 +122,16 @@
     }
     
     if (cachedImage) {
+        [cell.searchedImageView.activityIndicatorView stopAnimating];
+        cell.searchedImageView.progressView.hidden = YES;
         cell.searchedImageView.image = cachedImage;
     } else {
         [imageService loadImageFromUrlString:imageInfo.url andCache:self.imageCache forRowAtIndexPath:(NSIndexPath *)indexPath];
     }
-    // page loading
     
     return cell;
 }
-#warning self & _
-#warning separate!
+#warning (self & _) + вынести делегаты датасорсы в отдельные файлы
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -114,15 +163,16 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     
+    _page = 0;
     [_imageServices removeAllObjects];
     [_queue cancelAllOperations];
     
-    NSString *searchText = searchBar.text;
+    _searchText = searchBar.text;
     
-    [_urlService loadInformationWithText:searchText];
+    [_urlService loadInformationWithText:_searchText forPage:_page];
     [_urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
         
-        _arrayOfImagesInformation = imageUrls;
+        _arrayOfImagesInformation = [imageUrls mutableCopy];
         NSUInteger countOfImages = [imageUrls count];
         for (NSUInteger i = 0; i < countOfImages; i++) {
             AVGImageService *imageService = [AVGImageService new];
@@ -135,6 +185,7 @@
             [self.tableView reloadSections:set withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView endUpdates];
             [self.searchBar endEditing:YES];
+            _isLoading = NO;
         });
     }];
 }
@@ -183,12 +234,17 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         if (image) {
             AVGFlickrCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-#warning animation not working
-            [UIView animateWithDuration:1.0f animations:^{
-                cell.filterButton.enabled = NO;
-                cell.searchedImageView.image = image;
-                [cell setNeedsLayout];
+            cell.filterButton.enabled = NO;
+            
+            [UIView animateWithDuration:0.3f animations:^{
+                cell.searchedImageView.alpha = 0.f;
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:0.3f animations:^{
+                    cell.searchedImageView.image = image;
+                    cell.searchedImageView.alpha = 1.f;
+                }];
             }];
+            [cell setNeedsLayout];
         }
     });
 }

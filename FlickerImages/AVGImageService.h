@@ -31,11 +31,11 @@ typedef NS_ENUM(NSInteger, AVGImageState) {
 @interface AVGImageService : NSObject
 
 @property (nonatomic, assign) AVGImageState imageState;
-@property (nonatomic, weak) id <AVGImageServiceDelegate> delegate;
+@property (nonatomic, weak) id<AVGImageServiceDelegate> delegate;
 
 - (void)loadImageFromUrlString:(NSString *)urlString
                       andCache:(NSCache *)cache
-                       forRowAtIndexPath:(NSIndexPath *)indexPath;
+             forRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)filterImageforRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (AVGImageProgressState)imageProgressState;

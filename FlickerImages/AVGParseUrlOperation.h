@@ -6,12 +6,12 @@
 //  Copyright © 2017 iOS-School-1. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
-@class AVGLoadParseContainer;
+@class AVGOperationsContainer;
 
 @interface AVGParseUrlOperation : NSOperation
 
-@property (nonatomic, strong) AVGLoadParseContainer *container;
+@property (nonatomic, strong) AVGOperationsContainer *container;
 
 @end

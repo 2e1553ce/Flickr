@@ -9,7 +9,7 @@
 #import "AVGUrlService.h"
 #import "AVGLoadUrlOperation.h"
 #import "AVGParseUrlOperation.h"
-#import "AVGLoadParseContainer.h"
+#import "AVGOperationsContainer.h"
 
 @interface AVGUrlService ()
 
@@ -20,24 +20,30 @@
 @property (nonatomic, strong) AVGLoadUrlOperation *loadUrlsOperation;
 @property (nonatomic, strong) AVGParseUrlOperation *parseUrlsOperation;
 
-@property (nonatomic, strong) AVGLoadParseContainer *operationDataContainer;
+@property (nonatomic, strong) AVGOperationsContainer *operationDataContainer;
 
 @end
 
 @implementation AVGUrlService
+
+static NSInteger const perPage = 6;
+
+#pragma mark - Initialization
 
 - (instancetype)init {
     self = [super init];
     if (self) {
         self.queue = [NSOperationQueue new];
     }
-    
     return  self;
 }
 
-- (void)loadInformationWithText:(NSString *)text {
+#pragma mark - Loading urls for images
+
+- (void)loadInformationWithText:(NSString *)text
+                        forPage:(NSInteger)page {
     
-    self.operationDataContainer = [AVGLoadParseContainer new];
+    self.operationDataContainer = [AVGOperationsContainer new];
     
     self.loadUrlsOperation = [AVGLoadUrlOperation new];
     _loadUrlsOperation.container = _operationDataContainer;
@@ -47,8 +53,14 @@
     [_parseUrlsOperation addDependency:_loadUrlsOperation];
     
     _loadUrlsOperation.searchText = text;
+    _loadUrlsOperation.page = page;
+    _loadUrlsOperation.perPage = perPage;
+    
+    [_queue cancelAllOperations];
     [_queue addOperation:_loadUrlsOperation];
 }
+
+#pragma mark - Parsing loaded urls for images
 
 - (void)parseInformationWithCompletionHandler:(void(^)(NSArray *imageUrls))completion {
     [_queue addOperation:_parseUrlsOperation];
