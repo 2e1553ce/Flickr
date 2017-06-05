@@ -43,10 +43,8 @@
         self.operationDataContainer = [AVGOperationsContainer new];
         
         _loadOperation.operationDataContainer = _operationDataContainer;
-        
         _binaryOperation.operationDataContainer = _operationDataContainer;
         [_binaryOperation addDependency:_loadOperation];
-        
     }
     
     return  self;
@@ -61,13 +59,20 @@
 #pragma mark - Resume, pause , cancel image load
 
 - (void)resume {
-    if (_loadOperation.imageProgressState == AVGImageProgressStateCancelled) {
+    if (_loadOperation.imageProgressState == AVGImageProgressStatePaused) {
         [_queue cancelAllOperations];
         [_loadOperation cancel];
+        [_binaryOperation cancel];
+        
         self.loadOperation = [AVGLoadImageOperation new];
+        self.binaryOperation = [AVGBinaryImageOperation new];
+        
+        _loadOperation.operationDataContainer = _operationDataContainer;
+        _binaryOperation.operationDataContainer = _operationDataContainer;
         [_binaryOperation addDependency:_loadOperation];
+        
         [self loadImageFromUrlString:_urlString andCache:_cache forRowAtIndexPath:_indexPath];
-        NSLog(@"Downloading AGAIIIIIIN");
+        NSLog(@"Downloading AGAIN");
     }
 }
 
@@ -98,8 +103,7 @@
         _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
         
     } else if (_loadOperation.imageProgressState == AVGImageProgressStatePaused) {
-        [_loadOperation resumeDownload];
-        _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
+        [self resume];
     }
     
     // Update progressView
@@ -116,7 +120,6 @@
         __strong typeof(self) strongSelf = weakSelf;
         if (strongSelf) {
             
-            //strongSelf.downloadedImage = strongSelf.loadOperation.downloadedImage;
             if (strongSelf.operationDataContainer.image) {
                 [strongSelf.cache setObject:strongSelf.operationDataContainer.image forKey:urlString];
             }
@@ -140,7 +143,6 @@
             __strong typeof(self) strongSelf = weakSelf;
             if (strongSelf) {
                 
-                //strongSelf.binarizedImage = strongSelf.binaryOperation.filteredImage;
                 if (strongSelf.operationDataContainer.image) {
                     [strongSelf.cache setObject:strongSelf.operationDataContainer.image forKey:strongSelf.urlString];
                 }

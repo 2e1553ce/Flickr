@@ -78,7 +78,7 @@
 }
 
 - (void)pauseDownload {
-    NSLog(@"TASK PAAUUUUUSSSEEEDDD");
+    NSLog(@"TASK PAUSED");
     _imageProgressState = AVGImageProgressStatePaused;
     [_sessionDataTask cancel]; // :DD
 }
@@ -119,7 +119,7 @@ didReceiveResponse:(NSURLResponse *)response
         _imageProgressState = AVGImageProgressStateDownloaded;
         _operationDataContainer.image = [UIImage imageWithData:_dataToDownload];
         dispatch_semaphore_signal(_dataTaskSemaphore);
-        NSLog(@"DOWNLOOOOOOOOOOOOOAAAADED!");
+        NSLog(@"DOWNLOADED!");
     }
 }
 

@@ -26,6 +26,8 @@
 @property (nonatomic, strong) AVGUrlService *urlService;
 @property (nonatomic, assign) BOOL isLoading;
 
+@property (nonatomic, strong) UIActivityIndicatorView *indicatorFooter;
+
 @end
 
 @implementation AVGFlickerTableViewController
@@ -49,6 +51,11 @@
     _searchBar.delegate = self;
     _searchBar.placeholder = @"Поиск";
     self.tableView.tableHeaderView = self.searchBar;
+    
+    _indicatorFooter = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.frame), 44)];
+    [_indicatorFooter setColor:[UIColor blackColor]];
+    [self.tableView setTableFooterView:_indicatorFooter];
+    self.tableView.tableFooterView.hidden = YES;
 }
 
 #pragma mark - Download when scrolling
@@ -57,6 +64,8 @@
     if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height) {
         if (!_isLoading) {
             _isLoading = YES;
+            self.tableView.tableFooterView.hidden = NO;
+            [_indicatorFooter startAnimating];
             [self loadImages];
         }
     }
@@ -85,6 +94,9 @@
                 [arrayOfIndexPathes addObject:[NSIndexPath indexPathForRow:i inSection:0]];
             }
             
+            self.tableView.tableFooterView.hidden = YES;
+            [_indicatorFooter stopAnimating];
+            
             [self.tableView beginUpdates];
             [self.tableView insertRowsAtIndexPaths:arrayOfIndexPathes withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView endUpdates];
@@ -95,8 +107,6 @@
 
 }
 
-#warning fix downloading bug
-
 #pragma mark UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -106,11 +116,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
-    cell.delegate = self;
     
     // separate to another method
     AVGImageService *imageService = _imageServices[indexPath.row];
-    imageService.delegate = self;
     
     AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
     UIImage *cachedImage = [_imageCache objectForKey:imageInfo.url];
@@ -125,7 +133,10 @@
         [cell.searchedImageView.activityIndicatorView stopAnimating];
         cell.searchedImageView.progressView.hidden = YES;
         cell.searchedImageView.image = cachedImage;
+        
     } else {
+        cell.delegate = self;
+        imageService.delegate = self;
         [imageService loadImageFromUrlString:imageInfo.url andCache:self.imageCache forRowAtIndexPath:(NSIndexPath *)indexPath];
     }
     
@@ -147,14 +158,14 @@
     AVGImageService *service = _imageServices[indexPath.row];
     AVGImageProgressState state = [service imageProgressState];
     if (state == AVGImageProgressStateDownloading) {
-        [service cancel];
+        [service pause];
     }
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(nonnull UITableViewCell *)cell forRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     AVGImageService *service = _imageServices[indexPath.row];
     AVGImageProgressState state = [service imageProgressState];
-    if (state == AVGImageProgressStateCancelled) {
+    if (state == AVGImageProgressStatePaused) {
         [service resume];
     }
 }
@@ -163,7 +174,7 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     
-    _page = 0;
+    _page = 1;
     [_imageServices removeAllObjects];
     [_queue cancelAllOperations];
     
