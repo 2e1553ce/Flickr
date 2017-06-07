@@ -61,6 +61,7 @@
     [self.sessionDataTask resume];
     
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    [self.session finishTasksAndInvalidate];
 }
 
 @end

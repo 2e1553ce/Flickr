@@ -35,16 +35,8 @@
     
     if (self) {
         self.semaphore = dispatch_semaphore_create(0);
-        self.imageState = AVGImageStateNormal;
-        
         self.queue = [NSOperationQueue new];
-        self.loadOperation = [AVGLoadImageOperation new];
-        self.binaryOperation = [AVGBinaryImageOperation new];
         self.operationDataContainer = [AVGOperationsContainer new];
-        
-        _loadOperation.operationDataContainer = _operationDataContainer;
-        _binaryOperation.operationDataContainer = _operationDataContainer;
-        [_binaryOperation addDependency:_loadOperation];
     }
     
     return  self;
@@ -59,21 +51,7 @@
 #pragma mark - Resume, pause , cancel image load
 
 - (void)resume {
-    if (_loadOperation.imageProgressState == AVGImageProgressStatePaused) {
-        [_queue cancelAllOperations];
-        [_loadOperation cancel];
-        [_binaryOperation cancel];
-        
-        self.loadOperation = [AVGLoadImageOperation new];
-        self.binaryOperation = [AVGBinaryImageOperation new];
-        
-        _loadOperation.operationDataContainer = _operationDataContainer;
-        _binaryOperation.operationDataContainer = _operationDataContainer;
-        [_binaryOperation addDependency:_loadOperation];
-        
-        [self loadImageFromUrlString:_urlString andCache:_cache forRowAtIndexPath:_indexPath];
-        NSLog(@"Downloading AGAIN");
-    }
+    
 }
 
 - (void)pause {
@@ -94,17 +72,22 @@
     _urlString = urlString;
     _indexPath = indexPath;
     
+    [_queue cancelAllOperations];
+    
+    self.loadOperation = [AVGLoadImageOperation new];
+    self.binaryOperation = [AVGBinaryImageOperation new];
+    
+    _loadOperation.operationDataContainer = _operationDataContainer;
+    _binaryOperation.operationDataContainer = _operationDataContainer;
+    [_binaryOperation addDependency:_loadOperation];
+    
+    _imageState = AVGImageStateNormal;
+    _loadOperation.imageProgressState = AVGImageProgressStateNew;
+    _loadOperation.urlString = urlString;
+    [_queue addOperation:_loadOperation];
+    
     // Notificate controller for image load, start actinityIndicator and progressView
     [_delegate serviceStartedImageDownload:self forRowAtIndexPath:indexPath];
-    
-    _loadOperation.urlString = urlString;
-    if (_loadOperation.imageProgressState == AVGImageProgressStateNew) {
-        [_queue addOperation:_loadOperation];
-        _loadOperation.imageProgressState = AVGImageProgressStateDownloading;
-        
-    } else if (_loadOperation.imageProgressState == AVGImageProgressStatePaused) {
-        [self resume];
-    }
     
     // Update progressView
     __weak typeof(self) weakSelf = self;

@@ -47,7 +47,6 @@
 #pragma mark - Load image
 
 - (void)main {
-    
     if (_urlString) {
         
         NSURL *photoUrl = [NSURL URLWithString:[_urlString stringByAddingPercentEncodingWithAllowedCharacters:
@@ -64,6 +63,7 @@
         _imageProgressState = AVGImageProgressStateDownloading;
         
         dispatch_semaphore_wait(_dataTaskSemaphore, DISPATCH_TIME_FOREVER);
+        [self.session finishTasksAndInvalidate]; // why did u do that
     }
 }
 
@@ -74,11 +74,10 @@
     _imageProgressState = AVGImageProgressStateDownloading;
     NSLog(@"DOWNLOADING");
     [_sessionDataTask resume];
-
 }
 
 - (void)pauseDownload {
-    NSLog(@"TASK PAUSED");
+    NSLog(@"PAUSED");
     _imageProgressState = AVGImageProgressStatePaused;
     [_sessionDataTask cancel]; // :DD
 }

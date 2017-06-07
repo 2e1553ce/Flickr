@@ -20,11 +20,11 @@
 @property (nonatomic, copy)   NSString *searchText;
 @property (nonatomic, assign) NSInteger page;
 
-@property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) NSMutableArray <AVGImageService *> *imageServices;
 @property (nonatomic, strong) NSMutableArray <AVGImageInformation *> *arrayOfImagesInformation;
 @property (nonatomic, strong) AVGUrlService *urlService;
 @property (nonatomic, assign) BOOL isLoading;
+@property (nonatomic, assign) BOOL isLoadingBySearch; // при втором и далее поиске(через серч бар) вызывает didEndDisplay и канселит загрузку
 
 @property (nonatomic, strong) UIActivityIndicatorView *indicatorFooter;
 
@@ -41,10 +41,11 @@
     [self.tableView registerClass:[AVGFlickrCell class] forCellReuseIdentifier:flickrCellIdentifier];
     
     self.urlService = [AVGUrlService new];
-    self.queue = [NSOperationQueue new];
     self.imageCache = [NSCache new];
+    _imageCache.countLimit = 50;
     self.imageServices = [NSMutableArray new];
     self.isLoading = YES;
+    _isLoadingBySearch = YES;
     
     CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40.f);
     self.searchBar = [[UISearchBar alloc] initWithFrame:bounds];
@@ -71,10 +72,12 @@
     }
 }
 
-#pragma mark - Page loading (AVGImageService.m contains how many images load per page)
+#pragma mark - Page loading (AVGImageService.m contains variable how many images load per page)
 
 - (void)loadImages {
+    _isLoadingBySearch = NO;
     _page++;
+    
     [_urlService loadInformationWithText:_searchText forPage:_page];
     [_urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
         
@@ -117,11 +120,20 @@
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     
-    // separate to another method
     AVGImageService *imageService = _imageServices[indexPath.row];
-    
     AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
     UIImage *cachedImage = [_imageCache objectForKey:imageInfo.url];
+    
+    if (cachedImage) {
+        [cell.searchedImageView.activityIndicatorView stopAnimating];
+        cell.searchedImageView.progressView.hidden = YES;
+        cell.searchedImageView.image = cachedImage;
+    } else {
+        cell.delegate = self;
+        imageService.delegate = self;
+        imageService.imageState = AVGImageStateNormal;
+        [imageService loadImageFromUrlString:imageInfo.url andCache:self.imageCache forRowAtIndexPath:(NSIndexPath *)indexPath];
+    }
     
     if (imageService.imageState == AVGImageStateBinarized) {
         cell.filterButton.enabled = NO;
@@ -129,19 +141,9 @@
         cell.filterButton.enabled = YES;
     }
     
-    if (cachedImage) {
-        [cell.searchedImageView.activityIndicatorView stopAnimating];
-        cell.searchedImageView.progressView.hidden = YES;
-        cell.searchedImageView.image = cachedImage;
-        
-    } else {
-        cell.delegate = self;
-        imageService.delegate = self;
-        [imageService loadImageFromUrlString:imageInfo.url andCache:self.imageCache forRowAtIndexPath:(NSIndexPath *)indexPath];
-    }
-    
     return cell;
 }
+
 #warning (self & _) + вынести делегаты датасорсы в отдельные файлы
 #pragma mark - UITableViewDelegate
 
@@ -157,16 +159,8 @@
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
     AVGImageService *service = _imageServices[indexPath.row];
     AVGImageProgressState state = [service imageProgressState];
-    if (state == AVGImageProgressStateDownloading) {
-        [service pause];
-    }
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(nonnull UITableViewCell *)cell forRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    AVGImageService *service = _imageServices[indexPath.row];
-    AVGImageProgressState state = [service imageProgressState];
-    if (state == AVGImageProgressStatePaused) {
-        [service resume];
+    if (state == AVGImageProgressStateDownloading && !_isLoadingBySearch) {
+        [service cancel];
     }
 }
 
@@ -174,9 +168,9 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     
-    _page = 1;
     [_imageServices removeAllObjects];
-    [_queue cancelAllOperations];
+    _page = 1;
+    _isLoadingBySearch = YES;
     
     _searchText = searchBar.text;
     

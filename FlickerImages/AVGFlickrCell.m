@@ -21,7 +21,6 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     if (self) {
         [self createSubviewsWithContact];
     }
-    
     return self;
 }
 
