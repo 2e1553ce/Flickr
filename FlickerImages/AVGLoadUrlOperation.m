@@ -55,7 +55,6 @@
                                            completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
 
                                                _container.dataFromFlickr = data;
-                                               
                                                dispatch_semaphore_signal(semaphore);
                                            }];
     [self.sessionDataTask resume];

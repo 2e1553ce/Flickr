@@ -37,7 +37,7 @@
         // Release colorspace, context and bitmap information
         CGColorSpaceRelease(colorSpace);
         CGContextRelease(context);
-        CFRelease(imageRef);
+        CFRelease(imageRef); // could be leak
     }
 }
 

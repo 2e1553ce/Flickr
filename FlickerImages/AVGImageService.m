@@ -132,7 +132,6 @@
                 
                 _imageState = AVGImageStateBinarized;
                 [strongSelf.delegate service:strongSelf binarizedImage:strongSelf.operationDataContainer.image forRowAtIndexPath:indexPath];
-                
             }
         };
     }

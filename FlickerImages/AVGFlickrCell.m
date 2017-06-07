@@ -65,7 +65,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
         make.width.equalTo(@80);
         make.height.equalTo(@20);
         make.right.equalTo(superview).with.offset(-10);
-        make.centerY.equalTo(@(superview.center.y)).with.offset(0); // без 0 почемуто вниз уходит ??
+        make.centerY.equalTo(@(superview.center.y)).with.offset(0); // без 0 почемуто вниз уходит ?? bug
     }];
 }
 

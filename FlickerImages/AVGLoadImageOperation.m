@@ -70,7 +70,7 @@
 #pragma mark Resume, pause, cancel load operation
 
 - (void)resumeDownload {
-    
+    // not using
     _imageProgressState = AVGImageProgressStateDownloading;
     NSLog(@"DOWNLOADING");
     [_sessionDataTask resume];
