@@ -26,7 +26,7 @@
 
 @implementation AVGUrlService
 
-static NSInteger const perPage = 6;
+static NSInteger const perPage = 50;
 
 #pragma mark - Initialization
 
