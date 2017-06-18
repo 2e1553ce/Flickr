@@ -27,7 +27,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 #pragma mark - Reusing
 
 - (void)prepareForReuse {
-    _searchedImageView.image = nil;
+    self.searchedImageView.image = nil;
 }
 
 #pragma mark - Constraints
@@ -37,22 +37,22 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     self.searchedImageView = [AVGSearchImageView new];
     
     self.filterButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    _filterButton.titleLabel.textAlignment = NSTextAlignmentRight;
-    [_filterButton setTitle:@"Фильтр" forState:UIControlStateNormal];
-    [_filterButton addTarget:self
+    self.filterButton.titleLabel.textAlignment = NSTextAlignmentRight;
+    [self.filterButton setTitle:@"Фильтр" forState:UIControlStateNormal];
+    [self.filterButton addTarget:self
                           action:@selector(filterButtonAction:)
                 forControlEvents:UIControlEventTouchUpInside];
-    _filterButton.enabled = NO;
-    self.accessoryView = _filterButton;
+    self.filterButton.enabled = NO;
+    self.accessoryView = self.filterButton;
     
-    [self addSubview:_searchedImageView];
-    [self addSubview:_filterButton];
+    [self addSubview:self.searchedImageView];
+    [self addSubview:self.filterButton];
     
     // Masonry
     UIView *superview = self;
     
     // Left thumbnail
-    [_searchedImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.searchedImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.equalTo(@150);
         make.height.equalTo(@150); // wtf
         make.left.equalTo(superview).with.offset(10);
@@ -61,7 +61,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
     }];
     
     // Filter button
-    [_filterButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.filterButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.equalTo(@80);
         make.height.equalTo(@20);
         make.right.equalTo(superview).with.offset(-10);
@@ -78,7 +78,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 #pragma mark - Actions
 
 - (void)filterButtonAction:(UIButton *)sender {
-    [_delegate filterImageForCell:self];
+    [self.delegate filterImageForCell:self];
 }
 
 @end
