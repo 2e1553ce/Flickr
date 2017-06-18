@@ -16,10 +16,10 @@
 
 - (void)main {
     
-    if (_container.dataFromFlickr) {
+    if (self.container.dataFromFlickr) {
         
         NSError *error;
-        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:_container.dataFromFlickr
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:self.container.dataFromFlickr
                                                              options:0
                                                                error:&error];
         dict = dict[@"photos"];
@@ -36,7 +36,7 @@
             
             [images addObject:image];
         }
-        _container.imagesUrl = images;
+        self.container.imagesUrl = images;
     }
 }
 

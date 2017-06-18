@@ -46,27 +46,27 @@ static NSInteger const perPage = 50;
     self.operationDataContainer = [AVGOperationsContainer new];
     
     self.loadUrlsOperation = [AVGLoadUrlOperation new];
-    _loadUrlsOperation.container = _operationDataContainer;
+    self.loadUrlsOperation.container = self.operationDataContainer;
     
     self.parseUrlsOperation = [AVGParseUrlOperation new];
-    _parseUrlsOperation.container = _operationDataContainer;
-    [_parseUrlsOperation addDependency:_loadUrlsOperation];
+    self.parseUrlsOperation.container = self.operationDataContainer;
+    [self.parseUrlsOperation addDependency:self.loadUrlsOperation];
     
-    _loadUrlsOperation.searchText = text;
-    _loadUrlsOperation.page = page;
-    _loadUrlsOperation.perPage = perPage;
+    self.loadUrlsOperation.searchText = text;
+    self.loadUrlsOperation.page = page;
+    self.loadUrlsOperation.perPage = perPage;
     
-    [_queue cancelAllOperations];
-    [_queue addOperation:_loadUrlsOperation];
+    [self.queue cancelAllOperations];
+    [self.queue addOperation:self.loadUrlsOperation];
 }
 
 #pragma mark - Parsing loaded urls for images
 
 - (void)parseInformationWithCompletionHandler:(void(^)(NSArray *imageUrls))completion {
-    [_queue addOperation:_parseUrlsOperation];
+    [self.queue addOperation:self.parseUrlsOperation];
     
     __weak typeof(self) weakSelf = self;
-    _parseUrlsOperation.completionBlock = ^{
+    self.parseUrlsOperation.completionBlock = ^{
         __strong typeof(self) strongSelf = weakSelf;
         strongSelf.imagesUrls = strongSelf.operationDataContainer.imagesUrl;
         if (completion) {

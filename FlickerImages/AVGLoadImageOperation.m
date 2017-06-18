@@ -47,9 +47,9 @@
 #pragma mark - Load image
 
 - (void)main {
-    if (_urlString) {
+    if (self.urlString) {
         
-        NSURL *photoUrl = [NSURL URLWithString:[_urlString stringByAddingPercentEncodingWithAllowedCharacters:
+        NSURL *photoUrl = [NSURL URLWithString:[self.urlString stringByAddingPercentEncodingWithAllowedCharacters:
                                                 [NSCharacterSet URLFragmentAllowedCharacterSet]]];
         
         NSMutableURLRequest *request = [NSMutableURLRequest new];
@@ -59,10 +59,10 @@
         self.dataTaskSemaphore = dispatch_semaphore_create(0);
         
         self.sessionDataTask = [self.session dataTaskWithURL:photoUrl];
-        [_sessionDataTask resume];
-        _imageProgressState = AVGImageProgressStateDownloading;
+        [self.sessionDataTask resume];
+        self.imageProgressState = AVGImageProgressStateDownloading;
         
-        dispatch_semaphore_wait(_dataTaskSemaphore, DISPATCH_TIME_FOREVER);
+        dispatch_semaphore_wait(self.dataTaskSemaphore, DISPATCH_TIME_FOREVER);
         [self.session finishTasksAndInvalidate]; // why did u do that
     }
 }
@@ -71,22 +71,22 @@
 
 - (void)resumeDownload {
     // not using
-    _imageProgressState = AVGImageProgressStateDownloading;
+    self.imageProgressState = AVGImageProgressStateDownloading;
     NSLog(@"DOWNLOADING");
-    [_sessionDataTask resume];
+    [self.sessionDataTask resume];
 }
 
 - (void)pauseDownload {
     NSLog(@"PAUSED");
-    _imageProgressState = AVGImageProgressStatePaused;
-    [_sessionDataTask cancel]; // :DD
+    self.imageProgressState = AVGImageProgressStatePaused;
+    [self.sessionDataTask cancel]; // :DD
 }
 
 - (void)cancelDownload {
     [self cancel];
-    [_sessionDataTask cancel];
-    dispatch_semaphore_signal(_dataTaskSemaphore);
-    _imageProgressState = AVGImageProgressStateCancelled;
+    [self.sessionDataTask cancel];
+    dispatch_semaphore_signal(self.dataTaskSemaphore);
+    self.imageProgressState = AVGImageProgressStateCancelled;
     NSLog(@"CANCELED");
 }
 
@@ -99,25 +99,25 @@ didReceiveResponse:(NSURLResponse *)response
     
     completionHandler(NSURLSessionResponseAllow);
     
-    _downloadProgress = 0.0f;
-    _downloadSize = [response expectedContentLength];
+    self.downloadProgress = 0.0f;
+    self.downloadSize = [response expectedContentLength];
     self.dataToDownload = [NSMutableData new];
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
     
-    [_dataToDownload appendData:data];
-    _downloadProgress = [_dataToDownload length ] / _downloadSize;
+    [self.dataToDownload appendData:data];
+    self.downloadProgress = [self.dataToDownload length ] / self.downloadSize;
     NSLog(@"%f", self.downloadProgress);
 
-    if (_downloadProgressBlock) {
-        _downloadProgressBlock(_downloadProgress);
+    if (self.downloadProgressBlock) {
+        self.downloadProgressBlock(self.downloadProgress);
     }
     
-    if (_downloadProgress == 1.0) {
-        _imageProgressState = AVGImageProgressStateDownloaded;
-        _operationDataContainer.image = [UIImage imageWithData:_dataToDownload];
-        dispatch_semaphore_signal(_dataTaskSemaphore);
+    if (self.downloadProgress == 1.0) {
+        self.imageProgressState = AVGImageProgressStateDownloaded;
+        self.operationDataContainer.image = [UIImage imageWithData:self.dataToDownload];
+        dispatch_semaphore_signal(self.dataTaskSemaphore);
         NSLog(@"DOWNLOADED!");
     }
 }

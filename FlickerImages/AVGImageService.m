@@ -8,7 +8,6 @@
 
 #import "AVGImageService.h"
 #import "AVGBinaryImageOperation.h"
-#import "AVGFlickrCell.h"
 #import "AVGOperationsContainer.h"
 
 @interface AVGImageService ()
@@ -38,14 +37,13 @@
         self.queue = [NSOperationQueue new];
         self.operationDataContainer = [AVGOperationsContainer new];
     }
-    
     return  self;
 }
 
 #pragma mark - Progess state for image load
 
 - (AVGImageProgressState)imageProgressState {
-    return _loadOperation.imageProgressState;
+    return self.loadOperation.imageProgressState;
 }
 
 #pragma mark - Resume, pause , cancel image load
@@ -55,11 +53,11 @@
 }
 
 - (void)pause {
-    [_loadOperation pauseDownload];
+    [self.loadOperation pauseDownload];
 }
 
 - (void)cancel {
-    [_loadOperation cancelDownload];
+    [self.loadOperation cancelDownload];
 }
 
 #pragma mark - Operations on image
@@ -68,30 +66,30 @@
                       andCache:(NSCache *)cache
                        forRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    _cache = cache;
-    _urlString = urlString;
-    _indexPath = indexPath;
+    self.cache = cache;
+    self.urlString = urlString;
+    self.indexPath = indexPath;
     
-    [_queue cancelAllOperations];
+    [self.queue cancelAllOperations];
     
     self.loadOperation = [AVGLoadImageOperation new];
     self.binaryOperation = [AVGBinaryImageOperation new];
     
-    _loadOperation.operationDataContainer = _operationDataContainer;
-    _binaryOperation.operationDataContainer = _operationDataContainer;
-    [_binaryOperation addDependency:_loadOperation];
+    self.loadOperation.operationDataContainer = self.operationDataContainer;
+    self.binaryOperation.operationDataContainer = self.operationDataContainer;
+    [self.binaryOperation addDependency:self.loadOperation];
     
-    _imageState = AVGImageStateNormal;
-    _loadOperation.imageProgressState = AVGImageProgressStateNew;
-    _loadOperation.urlString = urlString;
-    [_queue addOperation:_loadOperation];
+    self.imageState = AVGImageStateNormal;
+    self.loadOperation.imageProgressState = AVGImageProgressStateNew;
+    self.loadOperation.urlString = urlString;
+    [self.queue addOperation:self.loadOperation];
     
     // Notificate controller for image load, start actinityIndicator and progressView
-    [_delegate serviceStartedImageDownload:self forRowAtIndexPath:indexPath];
+    [self.delegate serviceStartedImageDownload:self forRowAtIndexPath:indexPath];
     
     // Update progressView
     __weak typeof(self) weakSelf = self;
-    _loadOperation.downloadProgressBlock = ^(float progress) {
+    self.loadOperation.downloadProgressBlock = ^(float progress) {
         __strong typeof(self) strongSelf = weakSelf;
         if (strongSelf) {
              [strongSelf.delegate service:strongSelf updateImageDownloadProgress:progress forRowAtIndexPath:indexPath];
@@ -99,7 +97,7 @@
     };
 
     // Notificate controller for stop activityIndicator and progressView
-    _loadOperation.completionBlock = ^{
+    self.loadOperation.completionBlock = ^{
         __strong typeof(self) strongSelf = weakSelf;
         if (strongSelf) {
             
@@ -113,16 +111,16 @@
 
 - (void)filterImageforRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (_binaryOperation.isFinished) {
+    if (self.binaryOperation.isFinished) {
         return;
     }
     
-    NSArray *opertions = _queue.operations;
-    if (![opertions containsObject:_binaryOperation]) {
-        [_queue addOperation:_binaryOperation];
+    NSArray *opertions = self.queue.operations;
+    if (![opertions containsObject:self.binaryOperation]) {
+        [self.queue addOperation:self.binaryOperation];
         
         __weak typeof(self) weakSelf = self;
-        _binaryOperation.completionBlock = ^{
+        self.binaryOperation.completionBlock = ^{
             __strong typeof(self) strongSelf = weakSelf;
             if (strongSelf) {
                 
@@ -130,7 +128,7 @@
                     [strongSelf.cache setObject:strongSelf.operationDataContainer.image forKey:strongSelf.urlString];
                 }
                 
-                _imageState = AVGImageStateBinarized;
+                strongSelf.imageState = AVGImageStateBinarized;
                 [strongSelf.delegate service:strongSelf binarizedImage:strongSelf.operationDataContainer.image forRowAtIndexPath:indexPath];
             }
         };

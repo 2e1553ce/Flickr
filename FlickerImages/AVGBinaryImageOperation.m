@@ -13,7 +13,7 @@
 @implementation AVGBinaryImageOperation
 
 - (void)main {
-    if (_operationDataContainer) {
+    if (self.operationDataContainer) {
         // stackoverflow was here
         // Create image rectangle with current image width/height
         CGRect imageRect = CGRectMake(0, 0, self.operationDataContainer.image.size.width, self.operationDataContainer.image.size.height);
