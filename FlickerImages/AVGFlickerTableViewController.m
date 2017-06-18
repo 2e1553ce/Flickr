@@ -42,20 +42,20 @@
     
     self.urlService = [AVGUrlService new];
     self.imageCache = [NSCache new];
-    _imageCache.countLimit = 50;
+    self.imageCache.countLimit = 50;
     self.imageServices = [NSMutableArray new];
     self.isLoading = YES;
-    _isLoadingBySearch = YES;
+    self.isLoadingBySearch = YES;
     
     CGRect bounds = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 40.f);
     self.searchBar = [[UISearchBar alloc] initWithFrame:bounds];
-    _searchBar.delegate = self;
-    _searchBar.placeholder = @"Поиск";
+    self.searchBar.delegate = self;
+    self.searchBar.placeholder = @"Поиск";
     self.tableView.tableHeaderView = self.searchBar;
     
-    _indicatorFooter = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.frame), 44)];
-    [_indicatorFooter setColor:[UIColor blackColor]];
-    [self.tableView setTableFooterView:_indicatorFooter];
+    self.indicatorFooter = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.frame), 44)];
+    [self.indicatorFooter setColor:[UIColor blackColor]];
+    [self.tableView setTableFooterView:self.indicatorFooter];
     self.tableView.tableFooterView.hidden = YES;
 }
 
@@ -63,10 +63,10 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if ((scrollView.contentOffset.y + scrollView.frame.size.height) >= scrollView.contentSize.height) {
-        if (!_isLoading) {
-            _isLoading = YES;
+        if (!self.isLoading) {
+            self.isLoading = YES;
             self.tableView.tableFooterView.hidden = NO;
-            [_indicatorFooter startAnimating];
+            [self.indicatorFooter startAnimating];
             [self loadImages];
         }
     }
@@ -75,36 +75,36 @@
 #pragma mark - Page loading (AVGImageService.m contains variable how many images load per page)
 
 - (void)loadImages {
-    _isLoadingBySearch = NO;
-    _page++;
+    self.isLoadingBySearch = NO;
+    self.page++;
     
-    [_urlService loadInformationWithText:_searchText forPage:_page];
-    [_urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
+    [self.urlService loadInformationWithText:self.searchText forPage:self.page];
+    [self.urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
         
-        [_arrayOfImagesInformation addObjectsFromArray:[imageUrls mutableCopy]];
+        [self.arrayOfImagesInformation addObjectsFromArray:[imageUrls mutableCopy]];
         NSUInteger countOfImages = [imageUrls count];
         for (NSUInteger i = 0; i < countOfImages; i++) {
             AVGImageService *imageService = [AVGImageService new];
-            [_imageServices addObject:imageService];
+            [self.imageServices addObject:imageService];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             
             NSMutableArray *arrayOfIndexPathes = [[NSMutableArray alloc] init];
             
-            for(int i = (int)[_arrayOfImagesInformation count] - (int)[imageUrls count]; i < [_arrayOfImagesInformation count]; ++i){
+            for(int i = (int)[self.arrayOfImagesInformation count] - (int)[imageUrls count]; i < [self.arrayOfImagesInformation count]; ++i){
                 
                 [arrayOfIndexPathes addObject:[NSIndexPath indexPathForRow:i inSection:0]];
             }
             
             self.tableView.tableFooterView.hidden = YES;
-            [_indicatorFooter stopAnimating];
+            [self.indicatorFooter stopAnimating];
             
             [self.tableView beginUpdates];
             [self.tableView insertRowsAtIndexPaths:arrayOfIndexPathes withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView endUpdates];
             [self.searchBar endEditing:YES];
-            _isLoading = NO;
+            self.isLoading = NO;
         });
     }];
 
@@ -120,9 +120,9 @@
     
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     
-    AVGImageService *imageService = _imageServices[indexPath.row];
-    AVGImageInformation *imageInfo = _arrayOfImagesInformation[indexPath.row];
-    UIImage *cachedImage = [_imageCache objectForKey:imageInfo.url];
+    AVGImageService *imageService = self.imageServices[indexPath.row];
+    AVGImageInformation *imageInfo = self.arrayOfImagesInformation[indexPath.row];
+    UIImage *cachedImage = [self.imageCache objectForKey:imageInfo.url];
     
     if (cachedImage) {
         [cell.searchedImageView.activityIndicatorView stopAnimating];
@@ -152,14 +152,14 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [_searchBar endEditing:YES];
+    [self.searchBar endEditing:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath {
-    AVGImageService *service = _imageServices[indexPath.row];
+    AVGImageService *service = self.imageServices[indexPath.row];
     AVGImageProgressState state = [service imageProgressState];
-    if (state == AVGImageProgressStateDownloading && !_isLoadingBySearch) {
+    if (state == AVGImageProgressStateDownloading && !self.isLoadingBySearch) {
         [service cancel];
     }
 }
@@ -168,20 +168,20 @@
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
     
-    [_imageServices removeAllObjects];
-    _page = 1;
-    _isLoadingBySearch = YES;
+    [self.imageServices removeAllObjects];
+    self.page = 1;
+    self.isLoadingBySearch = YES;
     
-    _searchText = searchBar.text;
+    self.searchText = searchBar.text;
     
-    [_urlService loadInformationWithText:_searchText forPage:_page];
-    [_urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
+    [self.urlService loadInformationWithText:self.searchText forPage:self.page];
+    [self.urlService parseInformationWithCompletionHandler:^(NSArray *imageUrls) {
         
-        _arrayOfImagesInformation = [imageUrls mutableCopy];
+        self.arrayOfImagesInformation = [imageUrls mutableCopy];
         NSUInteger countOfImages = [imageUrls count];
         for (NSUInteger i = 0; i < countOfImages; i++) {
             AVGImageService *imageService = [AVGImageService new];
-            [_imageServices addObject:imageService];
+            [self.imageServices addObject:imageService];
         }
         
         NSIndexSet *set = [NSIndexSet indexSetWithIndex:0];
@@ -190,7 +190,7 @@
             [self.tableView reloadSections:set withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView endUpdates];
             [self.searchBar endEditing:YES];
-            _isLoading = NO;
+            self.isLoading = NO;
         });
     }];
 }
@@ -199,7 +199,7 @@
 
 - (void)filterImageForCell:(AVGFlickrCell *)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    AVGImageService *service = _imageServices[indexPath.row];
+    AVGImageService *service = self.imageServices[indexPath.row];
     [service filterImageforRowAtIndexPath:indexPath];
 }
 

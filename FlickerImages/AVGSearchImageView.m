@@ -22,12 +22,12 @@
         
         // Constraints for indicator & progress
         self.activityIndicatorView = [UIActivityIndicatorView new];
-        _activityIndicatorView.color = UIColor.grayColor;
+        self.activityIndicatorView.color = UIColor.grayColor;
         [self addSubview:_activityIndicatorView];
         
         self.progressView = [UIProgressView new];
         [self addSubview:_progressView];
-        _progressView.progress = 0.f;
+        self.progressView.progress = 0.f;
         
         [_activityIndicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.width.equalTo(@20);
