@@ -19,7 +19,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        [self createSubviewsWithContact];
+        [self createSubviews];
     }
     return self;
 }
@@ -32,7 +32,7 @@ NSString *const flickrCellIdentifier = @"flickrCellIdentifier";
 
 #pragma mark - Constraints
 
-- (void)createSubviewsWithContact {
+- (void)createSubviews {
     
     self.searchedImageView = [AVGSearchImageView new];
     
