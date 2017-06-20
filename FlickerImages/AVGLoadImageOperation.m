@@ -108,7 +108,7 @@ didReceiveResponse:(NSURLResponse *)response
     
     [self.dataToDownload appendData:data];
     self.downloadProgress = [self.dataToDownload length ] / self.downloadSize;
-    NSLog(@"%f", self.downloadProgress);
+    //NSLog(@"%f", self.downloadProgress);
 
     if (self.downloadProgressBlock) {
         self.downloadProgressBlock(self.downloadProgress);

@@ -117,7 +117,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    NSLog(@"- %ld", (long)indexPath.row);
     AVGFlickrCell *cell = [tableView dequeueReusableCellWithIdentifier:flickrCellIdentifier forIndexPath:indexPath];
     
     AVGImageService *imageService = self.imageServices[indexPath.row];
@@ -162,6 +162,12 @@
     if (state == AVGImageProgressStateDownloading && !self.isLoadingBySearch) {
         [service cancel];
     }
+}
+
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"WILL DISPLAY - %ld", (long)indexPath.row);
+
 }
 
 #pragma mark UISearchBarDelegate
