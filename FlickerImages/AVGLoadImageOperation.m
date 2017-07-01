@@ -72,12 +72,10 @@
 - (void)resumeDownload {
     // not using
     self.imageProgressState = AVGImageProgressStateDownloading;
-    NSLog(@"DOWNLOADING");
     [self.sessionDataTask resume];
 }
 
 - (void)pauseDownload {
-    NSLog(@"PAUSED");
     self.imageProgressState = AVGImageProgressStatePaused;
     [self.sessionDataTask cancel]; // :DD
 }
@@ -87,7 +85,6 @@
     [self.sessionDataTask cancel];
     dispatch_semaphore_signal(self.dataTaskSemaphore);
     self.imageProgressState = AVGImageProgressStateCancelled;
-    NSLog(@"CANCELED");
 }
 
 #pragma mark - NSURLSessionDelegate
@@ -118,7 +115,6 @@ didReceiveResponse:(NSURLResponse *)response
         self.imageProgressState = AVGImageProgressStateDownloaded;
         self.operationDataContainer.image = [UIImage imageWithData:self.dataToDownload];
         dispatch_semaphore_signal(self.dataTaskSemaphore);
-        NSLog(@"DOWNLOADED!");
     }
 }
 

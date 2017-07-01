@@ -144,7 +144,6 @@
     return cell;
 }
 
-#warning (self & _) - code style, вынести делегаты датасорсы в отдельные файлы
 #pragma mark - UITableViewDelegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
